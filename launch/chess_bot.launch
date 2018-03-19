@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="chess_bot" type="board_handler.py" name="board_handler" respawn="true"/>
+    <!-- node pkg="rosserial_python" type="serial_node.py" name="serial_node" args="/dev/ttyACM0" respawn="true"/ -->
+    <node pkg="chess_bot" type="chess_ai.py" name="chess_ai" respawn="true"/>
+    <node pkg="chess_bot" type="chess_ui" name="chess_ui" respawn="true"/>
+    <node pkg="chess_ui_fen" type="chess_ui_fen" name="chess_ui_fen" respawn="true"/>
+    <node pkg="chess_bot" type="ardsimul.py" name="arduino_simulation" respawn="true"/>
+    <node pkg="chess_bot" type="frame_pub" name="video_feed_publisher" respawn="true"/>
+    <node pkg="chess_bot" type="frame_handler" name="image_processing_input" respawn="true"/>
+</launch>
