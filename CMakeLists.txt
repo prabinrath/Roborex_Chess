@@ -31,8 +31,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 ## Find files 
 ################################################
 file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
-set(QT_MOC include/mainwindow.h)
-SET(QT_SOURCES src/mainwindow.cpp)
+set(QT_MOC include/InteractUI.h) #include/BoardUI.h)
+SET(QT_SOURCES src/InteractUI.cpp) #src/BoardUI.cpp)
 
 ################################################
 ## Setup QT

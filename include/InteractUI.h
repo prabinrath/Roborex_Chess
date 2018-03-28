@@ -1,34 +1,36 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef INTERACTUI_H
+#define INTERACTUI_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <QString>
 #include "chess_bot/ui_data.h"
+//#include "BoardUI.h"
 
 namespace Ui {
-class MainWindow;
+class InteractUI;
 }
 
-class MainWindow : public QMainWindow
+class InteractUI : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~MainWindow();
-    void setboard();
+    explicit InteractUI(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~InteractUI();
+    void setUI();
     void setflag(const std_msgs::Bool::ConstPtr& msg);
     void callback(const chess_bot::ui_data::ConstPtr& msg);
 private slots:
 	void on_send_clicked();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::InteractUI *ui;
+    //BoardUI *handle;
     ros::NodeHandle nh;
     ros::Subscriber airecv;
     ros::Subscriber turn;
 };
 
-#endif // MAINWINDOW_H
+#endif // INTERACTUI_H

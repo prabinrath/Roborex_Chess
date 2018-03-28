@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "InteractUI.h"
+#include "ui_InteractUI.h"
 #include <pthread.h>
 
 int swh,mv_cnt=0; //swh=flag to switch between messages types of airecv suscriber,mv_cnt=the move counter
@@ -31,14 +31,16 @@ void *ROS_task(void *q)
 	pthread_exit(NULL);
 	}
 
-MainWindow::MainWindow(ros::NodeHandle _nh, QWidget *parent) :
+InteractUI::InteractUI(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), nh(_nh)
+    ui(new Ui::InteractUI), nh(_nh)
 {
 	ui->setupUi(this);
-	setboard();
-	airecv = nh.subscribe("ui_send", 10, &MainWindow::callback, this);
-	turn = nh.subscribe("turn_flag", 10, &MainWindow::setflag, this);
+	//handle = new BoardUI(nh);
+	//handle->show();
+	setUI();
+	airecv = nh.subscribe("ui_send", 10, &InteractUI::callback, this);
+	turn = nh.subscribe("turn_flag", 10, &InteractUI::setflag, this);
 
 	pthread_t thread;
 	int rc;
@@ -50,19 +52,19 @@ MainWindow::MainWindow(ros::NodeHandle _nh, QWidget *parent) :
 	}
 }
 
-void MainWindow::on_send_clicked()
+void InteractUI::on_send_clicked()
 {
 	indat=ui->sys_in->toPlainText();
 	ui->sysout->setText(QString("SYSTEM OUTPUT"));
 	pub_cntrl=true;
 }
 
-void MainWindow::setflag(const std_msgs::Bool::ConstPtr& msg)
+void InteractUI::setflag(const std_msgs::Bool::ConstPtr& msg)
 {
 	master=msg->data;
 }
 
-void MainWindow::callback(const chess_bot::ui_data::ConstPtr& msg)
+void InteractUI::callback(const chess_bot::ui_data::ConstPtr& msg)
 {
 	swh=msg->type;
 	if(swh!=4)
@@ -83,14 +85,16 @@ void MainWindow::callback(const chess_bot::ui_data::ConstPtr& msg)
 	}
 }
 
-void MainWindow::setboard()
+void InteractUI::setUI()
 {
 	ui->move->setRowCount(100);
 	ui->move->setStyleSheet("QTableView {selection-background-color: rgb(255,228,181);}");
 }
 
-MainWindow::~MainWindow()
+InteractUI::~InteractUI()
 {
     dstr=true;
     delete ui;
 }
+
+//TODO:Merge Board UI with Interaction UI
