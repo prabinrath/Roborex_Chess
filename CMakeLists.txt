@@ -52,13 +52,13 @@ include_directories(
 add_library(chess_bot_ui ${QT_SOURCES} ${QT_FORMS_HPP} ${QT_MOC_HPP})
 target_link_libraries(chess_bot_ui ${QT_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(chess_ui src/main.cpp)
+add_executable(chess_ui src/UI/main.cpp)
 target_link_libraries(chess_ui chess_bot_ui)
 
-add_executable(frame_pub src/frame_pub.cpp)
+add_executable(frame_pub src/image_processing/frame_pub.cpp)
 target_link_libraries(frame_pub ${catkin_LIBRARIES}${OpenCV_LIBS})
 add_dependencies(frame_pub chess_bot_generate_messages_cpp)
 
-add_executable(frame_handler src/frame_handler.cpp)
+add_executable(frame_handler src/image_processing/frame_handler.cpp)
 target_link_libraries(frame_handler ${catkin_LIBRARIES}${OpenCV_LIBS})
 add_dependencies(frame_handler chess_bot_generate_messages_cpp)

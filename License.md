@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2017 Autonomous Chess Bot, Cyborg , NIT Rourkela
+Copyright (c) 2018 Autonomous Chess Bot, Cyborg , NIT Rourkela
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
