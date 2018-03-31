@@ -1,5 +1,4 @@
-#include "NewGame.h"
-#include "ui_NewGame.h"
+#include "Ui_Moc/NewGame.h"
 
 NewGame::NewGame(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

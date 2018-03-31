@@ -31,27 +31,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MAINUI_H
-#define MAINUI_H
+#ifndef NEWGAME_H
+#define NEWGAME_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include "ui_NewGame.h"
 
 namespace Ui {
-class MainUI;
+class NewGame;
 }
 
-class MainUI : public QMainWindow
+class NewGame : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainUI(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~MainUI();
+    explicit NewGame(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~NewGame();
     
 private:
-    Ui::MainUI *ui;
+    Ui::NewGame *ui;
     ros::NodeHandle nh;
 };
 
-#endif // MAINUI_H
+#endif // NEWGAME_H

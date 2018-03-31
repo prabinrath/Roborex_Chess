@@ -1,5 +1,4 @@
-#include "LoadDelete.h"
-#include "ui_LoadDelete.h"
+#include "Ui_Moc/LoadDelete.h"
 
 LoadDelete::LoadDelete(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

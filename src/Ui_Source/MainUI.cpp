@@ -1,5 +1,4 @@
-#include "MainUI.h"
-#include "ui_MainUI.h"
+#include "Ui_Moc/MainUI.h"
 
 MainUI::MainUI(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

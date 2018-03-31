@@ -31,27 +31,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MENU_H
-#define MENU_H
+#ifndef MAINUI_H
+#define MAINUI_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include "ui_MainUI.h"
 
 namespace Ui {
-class Menu;
+class MainUI;
 }
 
-class Menu : public QMainWindow
+class MainUI : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit Menu(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~Menu();
+    explicit MainUI(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~MainUI();
     
 private:
-    Ui::Menu *ui;
+    Ui::MainUI *ui;
     ros::NodeHandle nh;
 };
 
-#endif // MENU_H
+#endif // MAINUI_H

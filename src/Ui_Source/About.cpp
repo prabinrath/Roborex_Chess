@@ -1,5 +1,4 @@
-#include "About.h"
-#include "ui_About.h"
+#include "Ui_Moc/About.h"
 
 About::About(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

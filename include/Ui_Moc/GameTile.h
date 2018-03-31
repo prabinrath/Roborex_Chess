@@ -31,27 +31,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef NEWGAME_H
-#define NEWGAME_H
+#ifndef GAMETILE_H
+#define GAMETILE_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include "ui_GameTile.h"
 
 namespace Ui {
-class NewGame;
+class GameTile;
 }
 
-class NewGame : public QMainWindow
+class GameTile : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit NewGame(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~NewGame();
+    explicit GameTile(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~GameTile();
     
 private:
-    Ui::NewGame *ui;
+    Ui::GameTile *ui;
     ros::NodeHandle nh;
 };
 
-#endif // NEWGAME_H
+#endif // GAMETILE_H

@@ -31,27 +31,40 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef LOADDELETE_H
-#define LOADDELETE_H
+#ifndef INTERACTUI_H
+#define INTERACTUI_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
+#include <QString>
+#include "ui_InteractUI.h"
+#include "chess_bot/ui_data.h"
+//#include "BoardUI.h"
 
 namespace Ui {
-class LoadDelete;
+class InteractUI;
 }
 
-class LoadDelete : public QMainWindow
+class InteractUI : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit LoadDelete(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~LoadDelete();
-    
+    explicit InteractUI(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~InteractUI();
+    void setUI();
+    void setflag(const std_msgs::Bool::ConstPtr& msg);
+    void callback(const chess_bot::ui_data::ConstPtr& msg);
+private slots:
+	void on_send_clicked();
+
 private:
-    Ui::LoadDelete *ui;
+    Ui::InteractUI *ui;
+    //BoardUI *handle;
     ros::NodeHandle nh;
+    ros::Subscriber airecv;
+    ros::Subscriber turn;
 };
 
-#endif // LOADDELETE_H
+#endif // INTERACTUI_H

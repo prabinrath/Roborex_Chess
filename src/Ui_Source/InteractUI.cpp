@@ -1,5 +1,4 @@
-#include "InteractUI.h"
-#include "ui_InteractUI.h"
+#include "Ui_Moc/InteractUI.h"
 #include <pthread.h>
 
 int swh,mv_cnt=0; //swh=flag to switch between messages types of airecv suscriber,mv_cnt=the move counter

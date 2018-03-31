@@ -1,5 +1,4 @@
-#include "GameTile.h"
-#include "ui_GameTile.h"
+#include "Ui_Moc/GameTile.h"
 
 GameTile::GameTile(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

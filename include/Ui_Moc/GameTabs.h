@@ -31,14 +31,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef ABOUT_H
-#define ABOUT_H
+#ifndef GAMETABS_H
+#define GAMETABS_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include "ui_About.h"
+#include "ui_LoadDelete.h"
+#include "ui_Menu.h"
+#include "ui_NewGame.h"
+#include "ui_GameTile.h"
 
 namespace Ui {
 class About;
+class LoadDelete;
+class Menu;
+class NewGame;
+class GameTile;
 }
 
 class About : public QMainWindow
@@ -54,4 +63,59 @@ private:
     ros::NodeHandle nh;
 };
 
-#endif // ABOUT_H
+
+class LoadDelete : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit LoadDelete(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~LoadDelete();
+    
+private:
+    Ui::LoadDelete *ui;
+    ros::NodeHandle nh;
+};
+
+
+class Menu : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit Menu(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~Menu();
+    
+private:
+    Ui::Menu *ui;
+    ros::NodeHandle nh;
+};
+
+
+class NewGame : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit NewGame(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~NewGame();
+    
+private:
+    Ui::NewGame *ui;
+    ros::NodeHandle nh;
+};
+
+
+class GameTile : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit GameTile(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~GameTile();
+    
+private:
+    Ui::GameTile *ui;
+    ros::NodeHandle nh;
+};
+#endif // GAMETABS_H

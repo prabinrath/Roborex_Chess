@@ -31,21 +31,13 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 ## Find files 
 ################################################
 file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
-set(QT_MOC include/UI/InteractUI.h
-	   include/UI/MainUI.h
-	   include/UI/Menu.h
-	   include/UI/GameTile.h
-	   include/UI/About.h
-	   include/UI/NewGame.h
-	   include/UI/LoadDelete.h)
-SET(QT_SOURCES src/UI/InteractUI.cpp
-	       src/UI/MainUI.cpp
-	       src/UI/Menu.cpp
-	       src/UI/GameTile.cpp
-	       src/UI/About.cpp
-	       src/UI/NewGame.cpp
-	       src/UI/LoadDelete.cpp)
-#TODO:Try to add BoardUI
+set(QT_MOC include/Ui_Moc/MainUI.h include/Ui_Moc/InteractUI.h include/Ui_Moc/Menu.h include/Ui_Moc/NewGame.h include/Ui_Moc/LoadDelete.h include/Ui_Moc/About.h include/Ui_Moc/GameTile.h)
+SET(QT_SOURCES src/Ui_Source/MainUI.cpp src/Ui_Source/InteractUI.cpp src/Ui_Source/Menu.cpp src/Ui_Source/NewGame.cpp src/Ui_Source/LoadDelete.cpp src/Ui_Source/About.cpp src/Ui_Source/GameTile.cpp)
+
+#set(QT_MOC include/Ui_Moc/GameTabs.h)
+#SET(QT_SOURCES src/Ui_Source/GameTabs.cpp)
+
+#TODO:Try to get BoardUI here
 ################################################
 ## Setup QT
 ################################################
@@ -64,7 +56,7 @@ include_directories(
 add_library(chess_bot_ui ${QT_SOURCES} ${QT_FORMS_HPP} ${QT_MOC_HPP})
 target_link_libraries(chess_bot_ui ${QT_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(chess_ui src/UI/main.cpp)
+add_executable(chess_ui src/Ui_Source/main.cpp)
 target_link_libraries(chess_ui chess_bot_ui)
 
 add_executable(frame_pub src/Image_processing/frame_pub.cpp)

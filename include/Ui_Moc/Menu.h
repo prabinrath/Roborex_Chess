@@ -31,27 +31,28 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef GAMETILE_H
-#define GAMETILE_H
+#ifndef MENU_H
+#define MENU_H
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include "ui_Menu.h"
 
 namespace Ui {
-class GameTile;
+class Menu;
 }
 
-class GameTile : public QMainWindow
+class Menu : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit GameTile(ros::NodeHandle _nh,QWidget *parent = 0);
-    ~GameTile();
+    explicit Menu(ros::NodeHandle _nh,QWidget *parent = 0);
+    ~Menu();
     
 private:
-    Ui::GameTile *ui;
+    Ui::Menu *ui;
     ros::NodeHandle nh;
 };
 
-#endif // GAMETILE_H
+#endif // MENU_H

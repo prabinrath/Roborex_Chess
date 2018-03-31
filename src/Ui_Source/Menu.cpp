@@ -1,5 +1,4 @@
-#include "Menu.h"
-#include "ui_Menu.h"
+#include "Ui_Moc/Menu.h"
 
 Menu::Menu(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),

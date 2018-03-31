@@ -1,5 +1,4 @@
-//Don't make unknown changes
-#include "MainUI.h"
+#include "Ui_Moc/MainUI.h"
 #include <QApplication>
 #include <iostream>
 using namespace std;
