@@ -38,10 +38,10 @@ brd=chess.Board()
 def checking(string_):
     len_value=len(string_)
     if len_value==4:
-        fuck=checking_(string_)
+        cool=checking_(string_)
     if len_value==5:
-        fuck='5'
-    return fuck
+        cool='5'
+    return cool
 
 
 def checking_(string_):
