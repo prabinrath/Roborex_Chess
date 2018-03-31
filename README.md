@@ -31,6 +31,7 @@ The project uses：
 * Arduino IDE
 * QT4
 * Python 2.7 libs (Python chess API & Stockfish 8)
+* CMake 2.8.3
 
 # Note
 The Project is still under Development.
