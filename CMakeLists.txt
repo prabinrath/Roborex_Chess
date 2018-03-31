@@ -31,9 +31,21 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 ## Find files 
 ################################################
 file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
-set(QT_MOC include/InteractUI.h) #include/BoardUI.h)
-SET(QT_SOURCES src/InteractUI.cpp) #src/BoardUI.cpp)
-
+set(QT_MOC include/UI/InteractUI.h
+	   include/UI/MainUI.h
+	   include/UI/Menu.h
+	   include/UI/GameTile.h
+	   include/UI/About.h
+	   include/UI/NewGame.h
+	   include/UI/LoadDelete.h)
+SET(QT_SOURCES src/UI/InteractUI.cpp
+	       src/UI/MainUI.cpp
+	       src/UI/Menu.cpp
+	       src/UI/GameTile.cpp
+	       src/UI/About.cpp
+	       src/UI/NewGame.cpp
+	       src/UI/LoadDelete.cpp)
+#TODO:Try to add BoardUI
 ################################################
 ## Setup QT
 ################################################
@@ -55,10 +67,10 @@ target_link_libraries(chess_bot_ui ${QT_LIBRARIES} ${catkin_LIBRARIES})
 add_executable(chess_ui src/UI/main.cpp)
 target_link_libraries(chess_ui chess_bot_ui)
 
-add_executable(frame_pub src/image_processing/frame_pub.cpp)
+add_executable(frame_pub src/Image_processing/frame_pub.cpp)
 target_link_libraries(frame_pub ${catkin_LIBRARIES}${OpenCV_LIBS})
 add_dependencies(frame_pub chess_bot_generate_messages_cpp)
 
-add_executable(frame_handler src/image_processing/frame_handler.cpp)
+add_executable(frame_handler src/Image_processing/frame_handler.cpp)
 target_link_libraries(frame_handler ${catkin_LIBRARIES}${OpenCV_LIBS})
 add_dependencies(frame_handler chess_bot_generate_messages_cpp)

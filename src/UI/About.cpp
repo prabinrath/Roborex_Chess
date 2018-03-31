@@ -1,14 +1,14 @@
-#include "GameTile.h"
-#include "ui_GameTile.h"
+#include "About.h"
+#include "ui_About.h"
 
-GameTile::GameTile(ros::NodeHandle _nh, QWidget *parent) :
+About::About(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::GameTile), nh(_nh)
+    ui(new Ui::About), nh(_nh)
 {
 	ui->setupUi(this);
 }
 
-GameTile::~GameTile()
+About::~About()
 {
     delete ui;
 }

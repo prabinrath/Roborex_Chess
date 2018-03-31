@@ -1,14 +1,14 @@
-#include "GameTile.h"
-#include "ui_GameTile.h"
+#include "LoadDelete.h"
+#include "ui_LoadDelete.h"
 
-GameTile::GameTile(ros::NodeHandle _nh, QWidget *parent) :
+LoadDelete::LoadDelete(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::GameTile), nh(_nh)
+    ui(new Ui::LoadDelete), nh(_nh)
 {
 	ui->setupUi(this);
 }
 
-GameTile::~GameTile()
+LoadDelete::~LoadDelete()
 {
     delete ui;
 }
