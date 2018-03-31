@@ -27,38 +27,45 @@
 ################################################################################
 ################################################################################
 ##
-## AUTHORS: Pabitra Dash
+## AUTHORS: Pabitra Dash, Swostik Acharya
 ##
 ################################################################################
 
-s="00010000,01000000,00010000,10000100,01001001,01000010,01001000,10100010"
-q=''
-s=s.split(',')
-i,j=0,0
-while i<8:
-	if (i%2==0):
-		s[i]=list(s[i])
-		s[i].reverse()
-		''.join(s[i])
-	else:
-		s[i]=list(s[i])
-		for j in range(0,8,2):
-			s[i][j],s[i][j+1]=s[i][j+1],s[i][j]
-			''.join(s[i])
-	i=i+1
-j=0
-for j in range(1,9,2):
-	s[j].reverse()
-i=0
-while i<4:
-	s[i],s[7-i]=s[7-i],s[i]
-	i=i+1
-i,j=0,0
-while j<8:
-	w=s[0][j]+s[1][j]+s[2][j]+s[3][j]+s[4][j]+s[5][j]+s[6][j]+s[7][j]
-	q=q+w
-	if (j<=6):
-		q=q+','
-	j=j+1
-print(q)
-	
+def func(mat_1,mat_2):
+    a=mat_1[:];s=mat_2[:]
+    i,j=0,0
+    for j in range(4):
+        a[j],a[7-j]=a[7-j],a[j]
+        s[j],s[7-j]=s[7-j],s[j]
+    d=[]
+    f1,f2,t1,t2=99,99,0,0
+    for i in range(8):
+        for j in range(8):
+            if a[i][j]!=s[i][j]:
+                d.append(i)
+                d.append(j)
+    f1,f2,t1,t2=d[0],d[1],d[2],d[3]
+    if a[f1][f2]==1:
+        pass
+    else:
+        f1,t1=t1,f1 # swaps
+        f2,t2=t2,f2 #swap
+    f1+=1;t1+=1;f2+=1;t2+=1
+    po=[1,2,3,4,5,6,7,8];op=['a','b','c','d','e','f','g','h']
+    for i in range(8):
+        if f2==po[i]:
+            f2=op[i]
+        if t2==po[i]:
+            t2=op[i]
+            pass
+    f1=str(f1);t1=str(t1)
+    print("The move performed is:-  ")
+    print(f2+f1+t2+t1)
+
+#Give input of  the binary matrices
+first=[[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0],
+[0,0,0,0,0,0,0,0],[1,1,1,1,0,1,1,1],[1,1,1,1,1,1,1,1]]
+second=[[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,1,1],[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0],
+[0,0,0,0,0,0,0,0],[1,1,1,1,0,1,1,1],[1,1,1,1,1,1,1,1]]
+#call the function
+func(first,second)

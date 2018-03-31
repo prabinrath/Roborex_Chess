@@ -27,38 +27,50 @@
 ################################################################################
 ################################################################################
 ##
-## AUTHORS: Pabitra Dash
+## AUTHORS: Prabin Rath
 ##
 ################################################################################
 
-s="00010000,01000000,00010000,10000100,01001001,01000010,01001000,10100010"
-q=''
-s=s.split(',')
-i,j=0,0
-while i<8:
-	if (i%2==0):
-		s[i]=list(s[i])
-		s[i].reverse()
-		''.join(s[i])
-	else:
-		s[i]=list(s[i])
-		for j in range(0,8,2):
-			s[i][j],s[i][j+1]=s[i][j+1],s[i][j]
-			''.join(s[i])
-	i=i+1
-j=0
-for j in range(1,9,2):
-	s[j].reverse()
-i=0
-while i<4:
-	s[i],s[7-i]=s[7-i],s[i]
-	i=i+1
-i,j=0,0
-while j<8:
-	w=s[0][j]+s[1][j]+s[2][j]+s[3][j]+s[4][j]+s[5][j]+s[6][j]+s[7][j]
-	q=q+w
-	if (j<=6):
-		q=q+','
-	j=j+1
-print(q)
-	
+#This code talks with the Stockfish Chess Engine. Entries are to be made in algebraic
+#chess notation (eg. e2e4). Stockfish is set to think for a maximum of 1 sec.
+
+import sys
+
+chess = r'/Applications/stockfish-4-mac/Mac/stockfish-4-64'.split()['linux' in sys.platform]
+
+import subprocess as S
+getprompt = 'isready'
+done= 'readyok'
+
+proc= S.Popen(chess, stdin=S.PIPE, stdout=S.PIPE, bufsize=1, universal_newlines=True)
+
+print(proc.stdout.readline().strip())
+proc.stdin.write('uci\n')
+
+while True :
+        text = proc.stdout.readline().strip()
+        print(text)
+        if text == "uciok":
+            break
+        
+print('Choose skill level (0-20):')
+skillLevel=input()
+proc.stdin.write('setoption name Skill Level value '+skillLevel+'\n')
+proc.stdin.write('ucinewgame\n')
+
+moveList='position startpos moves '
+checkmate=False
+while checkmate==False:
+    print('Enter move:')
+    move=input()
+    moveList=moveList+move+' '
+    proc.stdin.write(moveList+'\n')
+    proc.stdin.write('go movetime 1000\n')
+    print('Computer moves:')
+    while True :
+        text = proc.stdout.readline().strip()
+        if text[0:8] == 'bestmove':
+            cpuMove=text[9:13]
+            print(cpuMove)
+            moveList=moveList+cpuMove+' '
+            break

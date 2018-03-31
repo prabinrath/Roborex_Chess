@@ -27,38 +27,32 @@
 ################################################################################
 ################################################################################
 ##
-## AUTHORS: Pabitra Dash
+## AUTHORS: Prabin Rath
 ##
 ################################################################################
 
-s="00010000,01000000,00010000,10000100,01001001,01000010,01001000,10100010"
-q=''
-s=s.split(',')
-i,j=0,0
-while i<8:
-	if (i%2==0):
-		s[i]=list(s[i])
-		s[i].reverse()
-		''.join(s[i])
-	else:
-		s[i]=list(s[i])
-		for j in range(0,8,2):
-			s[i][j],s[i][j+1]=s[i][j+1],s[i][j]
-			''.join(s[i])
-	i=i+1
-j=0
-for j in range(1,9,2):
-	s[j].reverse()
-i=0
-while i<4:
-	s[i],s[7-i]=s[7-i],s[i]
-	i=i+1
-i,j=0,0
-while j<8:
-	w=s[0][j]+s[1][j]+s[2][j]+s[3][j]+s[4][j]+s[5][j]+s[6][j]+s[7][j]
-	q=q+w
-	if (j<=6):
-		q=q+','
-	j=j+1
-print(q)
+import chess
+import chess.uci
+
+eng=chess.uci.popen_engine("stockfish")
+brd=chess.Board()
+x=''
+print("CHESS GAME CKECK 1\n")
+
+while(True):
+	#engine turn
+	eng.position(brd)
+	bst,pon=eng.go(movetime=3000)
+	brd.push(bst)
+	print(brd)
+	print('\n')
 	
+	#user turn
+	x=raw_input('Enter your move: ')
+	if x=='quit':
+		eng.quit()
+		break
+	brd.push(chess.Move.from_uci(x))
+	print(brd)
+	print('\n')
+print("END GAME")
