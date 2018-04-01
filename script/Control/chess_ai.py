@@ -26,18 +26,22 @@
 ################################################################################
 ################################################################################
 ##
-## AUTHORS: Prabin Rath,Subham Sahoo
+## AUTHORS: Prabin Rath, Subham Sahoo
 ##
 ################################################################################
 import rospy
 import chess
 import chess.uci
+import chess.pgn
 import time
+import os
 from std_msgs.msg import Int32,String,Bool
 from chess_bot.msg import ui_data
 
-eng=chess.uci.popen_engine("stockfish")
-brd=chess.Board()
+eng=chess.uci.popen_engine("stockfish") #initialize chess engine
+brd=chess.Board() #global chess board declaration
+game=chess.pgn.Game() #global game handle declaration
+node=game.end() #global node variable for tracking variation heirarchy
 dict1={'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
 indata="" #input UCI string decoded
 outdata="" #output UCI string from stockfish too be encoded
@@ -48,7 +52,139 @@ respn="#" #respawn character
 cur_fen="" #to store fen
 illigal=True #for detecting illigal moves
 rwait=True #flag for system to stall during stockfish respawn
+newGameFlag=False #flag for asking move turn during new game
+quit_flag=False #flag to break the master loop
+setBoardFlag=False #flag to send fen to BoardUI
 
+################################### Helping Functions for PGN Handling and crash management
+def logger(game,string):
+	log=open("/home/prabin/chess/Final/log.txt","a")
+	log.write(game.headers["Event"]+','+game.headers["White"]+','+game.headers["Black"]+','+game.headers["Round"]+','+time.ctime()+','+string+'\n')
+	log.close()
+
+def kyle():
+    	current_time=time.ctime()
+    	parser={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
+    	ll=current_time.split()
+    	return ll[-1]+':'+parser[ll[1]]+':'+ll[2]
+
+def nth_retrival(event,white,black,round_): #load_game function
+    global game,brd,master,turn
+    new_pgn=open("/home/prabin/chess/Final/gamedata.pgn")
+    i=0
+    for i,headers in chess.pgn.scan_headers(new_pgn):
+        if(headers["Event"]==event) and (headers["White"]==white) and (headers["Black"]==black) and (headers["Round"]==round_):
+            game=chess.pgn.read_game(new_pgn)
+            game.headers["Event"]=headers["Event"]
+            game.headers["White"]=headers["White"]
+            game.headers["Black"]=headers["Black"]
+            game.headers["Round"]=headers["Round"]
+            game.headers["Date" ]=headers["Date" ]
+            print('Found saved game')
+            brd=game.board()
+            for move in game.main_line():
+                brd.push(move)
+	    #print(str(brd)+'\n')
+    #TODO:setupUI code
+    logger(game,"retrived")
+    turn=False
+    master=True
+
+def nth_deletion(event,white,black,round_): #delete_game function #here the game variable is local and is used for deletion action
+    new=open("/home/prabin/chess/Final/gamedata.pgn")
+    i=0
+    game_data=open("/home/prabin/chess/Final/tempo.pgn","w")
+    for i,headers in chess.pgn.scan_headers(new):
+        if(headers["Event"]==event) and (headers["White"]==white) and (headers["Black"]==black) and (headers["Round"]==round_):
+            continue
+        else:
+            game=chess.pgn.read_game(new)
+            game.headers["Event"]=headers["Event"]
+            game.headers["White"]=headers["White"]
+            game.headers["Black"]=headers["Black"]
+            game.headers["Round"]=headers["Round"]
+            game.headers["Date"]=headers["Date"]
+            exporter=chess.pgn.FileExporter(game_data)
+            game.accept(exporter)
+    game_data.close()
+    os.remove("/home/prabin/chess/Final/gamedata.pgn")
+    os.rename("/home/prabin/chess/Final/tempo.pgn","/home/prabin/chess/Final/gamedata.pgn")
+
+def new_game(event,white,black,round_):
+	global game,brd,newGameFlag
+	brd=chess.Board()
+	game=chess.pgn.Game()
+	game.headers["Event"]=event
+	game.headers["White"]=white
+	game.headers["Black"]=black
+	game.headers["Round"]=round_
+	game.headers["Date" ] =kyle()
+	logger(game,"New game")
+	newGameFlag=True
+
+def restart_game():
+	global game,brd,setBoardFlag
+	temp=chess.pgn.Game()
+	temp.headers['Event']=game.headers['Event']
+	temp.headers['White']=game.headers['White']
+	temp.headers['Black']=game.headers['Black']
+	temp.headers['Round']=str(int(game.headers['Round'])+1)
+	temp.headers['Date']=kyle()
+	game=temp
+	brd=game.board()
+	setBoardFlag=True
+	logger(game,'restart')
+
+def save_game():
+	global game
+	if os.path.exists("/home/prabin/chess/Final/gamedata.pgn"): #checking the presence of a previously saved game with equal parameters
+		pgn_=open("/home/prabin/chess/Final/gamedata.pgn")
+		for i,headers in chess.pgn.scan_headers(pgn_):
+			if(headers["Event"]==game.headers["Event"]) and (headers["White"]==game.headers["White"]) and (headers["Black"]==game.headers["Black"]) and (headers["Round"]==game.headers["Round"]):
+				pgn_.close()
+				nth_deletion(game.headers["Event"],game.headers["White"],game.headers["Black"],game.headers["Round"])
+				break
+		pgn_.close()
+	pgn_=open("/home/prabin/chess/Final/gamedata.pgn","a")
+	exporter = chess.pgn.FileExporter(pgn_)
+	game.accept(exporter)
+	pgn_.close()
+	logger(game,'save')
+
+def undo_move():
+	global game,brd,node,setBoardFlag
+	if len(game.variations)==1:
+		node.parent.remove_variation(brd.pop())
+		del node
+		node=game.end()
+		node.parent.remove_variation(brd.pop())
+		del node
+		node=game.end()
+		print(brd)
+		setBoardFlag=True
+		logger(game,'undo')
+	else:
+		print('Nothing To Undo!')
+
+def backup_game(move):
+	global game,node
+	pgn=open("/home/prabin/chess/Final/temp.pgn","w")
+	node=game.end()
+	node = node.add_variation(chess.Move.from_uci(move))
+	exporter = chess.pgn.FileExporter(pgn)
+	game.accept(exporter)
+	pgn.close()
+
+def quit_game():
+	global game,quit_flag
+	if os.path.exists("/home/prabin/chess/Final/temp.pgn"):
+		os.remove("/home/prabin/chess/Final/temp.pgn")
+	eng.quit()
+	quit_flag=True
+	logger(game,'quit')
+################################################################################
+
+############################### Helping Functions for control system and Arduino
 def diff(s):
     global value,dict1,brd
     reil=''
@@ -228,7 +364,9 @@ def checking_(string_):
     	if(flag==99):
         	flag=0
     	return flag
+#########################################################
 
+################################# ROS Suscriber Functions
 def decode(mv):
 	global indata,master
 	indata=diff(mv.data.split(','))
@@ -247,9 +385,10 @@ def uicall(uidat):
 		respn=uidat.sys
 	elif uidat.type==3:
 		illigal=False
+#########################################################
 
 def main_():
-	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,eng,brd
+	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,newGameFlag,setBoardFlag,eng,game,brd,node,quit_flag
 	rospy.init_node('chess_ai')
 	flagpub = rospy.Publisher('turn_flag', Bool, queue_size=10)
 	uipub = rospy.Publisher('ui_send', ui_data, queue_size=10)
@@ -257,16 +396,34 @@ def main_():
 	ardpub = rospy.Publisher('move_seq', String, queue_size=10)
 	rospy.Subscriber('board_string', String, decode)
 	rospy.Subscriber('ui_recv', ui_data, uicall)
-
-	#this occurs for the first time the game starts
-	time.sleep(5)
-	temp=ui_data()
-	temp.type=0
-	temp.sys="Enter 'yes' to move first \nand press select"
-	uipub.publish(temp)
+	
+	if os.path.exists("/home/prabin/chess/Final/temp.pgn"): #TODO:add turn setup after recovery
+		print("Previous game crashed\n")
+		new_pgn=open("/home/prabin/chess/Final/temp.pgn")
+		game=chess.pgn.read_game(new_pgn)
+		node=game.end()
+		brd=game.board()
+		for move in game.main_line():
+			brd.push(move)
+		#print(str(brd)+'\n')
+		#TODO:setupUI code
+	    	logger(game,"Crashed Game")
+	    	'''
+		if ' b ' in brd.fen():
+		''' 
 
 	rate = rospy.Rate(20)
 	while not rospy.is_shutdown():
+		if quit_flag==True:
+			break
+		#this occurs for Newgame
+		if newGameFlag==True:
+			time.sleep(2)
+			temp=ui_data()
+			temp.type=0
+			temp.sys="Enter 'yes' to move first \nand press select"
+			uipub.publish(temp)
+			newGameFlag=False
 		if master==True:
 			flagpub.publish(turn)
 			if turn==False: #user turn
@@ -283,6 +440,7 @@ def main_():
 				if chess.Move.from_uci(indata) in brd.legal_moves: #for legal move
 					print('correct move')
 					brd.push(chess.Move.from_uci(indata))
+					backup_game(indata)
 					temp.type=4
 					temp.mo=indata
 					uipub.publish(temp)
@@ -316,6 +474,7 @@ def main_():
 				brd.push(bst)
 				outdata=bst.uci()
                 		print(outdata)
+                		backup_game(outdata)
 				temp.type=4
 				temp.mo=outdata
 				uipub.publish(temp)
@@ -354,9 +513,13 @@ def main_():
 					uipub.publish(temp)
 					eng.quit()
 				turn=False
-			fenpub.publish(brd.fen())
+			setBoardFlag=True
 		if turn==False:
 			master=False
+		if setBoardFlag==True:
+			fenpub.publish(brd.fen())
+			setBoardFlag=False
+		
 		rate.sleep()
 
 if __name__ == '__main__':
