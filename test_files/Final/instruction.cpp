@@ -36,49 +36,43 @@
 #include"string"
 using namespace std;
 
-string fun(int a)
+string setOutput(string query_tag)
 {
-	int count=-1,check=0;
-	string value="",temp;
+	string temp,file_tag,output="";
 	ifstream newfile;
-	newfile.open("final_text.txt",ios::in);
-	while(getline(newfile,temp))
+	newfile.open("/home/prabin/catkin_ws/src/chess_bot/test_files/Final/textdata.txt",ios::in);
+	if(!newfile.is_open())
+		cout<<"File not found\n";
+	while(getline(newfile,temp) && newfile.is_open())
 	{
-		if(a==count && temp[0]!='#')
+		if(temp[0]=='#' && temp.length()>1)
 		{
-			check=1;
-			if(value=="")
-				value+=temp;
-			else
-				value+="\n"+temp;
-		}
-		else if(temp[0]=='#')
-		{	
-			if(check==1)
+			for(int i=1;i<temp.length();i++)
+				{file_tag.push_back(temp[i]);}
+				//cout<<file_tag<<endl;
+			if(file_tag==query_tag)
 			{
-				newfile.close();
-				return value;
+				while(getline(newfile,temp))
+				{
+					if(temp=="#")
+						{break;}
+					else
+					{output+=temp;output+="\n";}
+				}
 			}
-			count++;
+			file_tag="";
 		}
 	}
-
-
-	/**if(a==0)
-	{
-		newfile.read((char*)&inst,sizeof(inst));
-		while(!newfile.eof())
-	}
-	else if(a==1)
-	{
-		newfile.read((char*)&inst,sizeof(inst));
-	}**/
+	return output;
 }
 
 int main()
 {
-	int a;
-	cin>>a;
-	cout<<fun(a);
+	string query_tag;
+	cin>>query_tag;
+	if(setOutput(query_tag)=="")
+		cout<<"Data not Found\n";
+	else
+		cout<<setOutput(query_tag);
 }
 

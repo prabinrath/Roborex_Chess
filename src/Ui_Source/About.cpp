@@ -32,12 +32,48 @@
 
 
 #include "Ui_Moc/About.h"
+using namespace std;
 
-About::About(ros::NodeHandle _nh, QWidget *parent) :
+string FILE_PATH = ros::package::getPath("chess_bot") + "/files";
+
+About::About(string tag,QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::About), nh(_nh)
+    ui(new Ui::About)
 {
 	ui->setupUi(this);
+	setOutput(tag);
+}
+
+void About::setOutput(string query_tag)
+{
+	string temp,file_tag,output="";
+	ifstream newfile;
+	newfile.open(FILE_PATH+"/textdata.txt",ios::in);
+	if(!newfile.is_open())
+		{qDebug()<<"File not found\n";}
+	while(getline(newfile,temp) && newfile.is_open())
+	{
+		if(temp[0]=='#' && temp.length()>1)
+		{
+			for(int i=1;i<temp.length();i++)
+				{file_tag.push_back(temp[i]);}
+			if(file_tag==query_tag)
+			{
+				while(getline(newfile,temp))
+				{
+					if(temp=="#")
+						{break;}
+					else
+					{output+=temp;output+="\n";}
+				}
+			}
+			file_tag="";
+		}
+	}
+	if(output=="")
+		{qDebug()<<"No such tag found";}
+	else
+		{ui->text->setText(Qstring(output.c_str()));}
 }
 
 About::~About()

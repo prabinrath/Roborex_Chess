@@ -41,7 +41,7 @@ using namespace std;
 main()
 {
 	ifstream pgn;
-	pgn.open("Berliner.pgn"); //open the pgn file in write mode
+	pgn.open("/home/prabin/chess/Final/gamedata.pgn"); //open the pgn file in read mode
 	if(pgn.is_open())
 	{
 		cout<<"File opened\n";
@@ -49,10 +49,9 @@ main()
 	else
 	{
 		cout<<"Couldnt open the file\n";
-		exit(1);
 	}
 	string line,parm,send; //required string variables
-	while(getline(pgn,line)) //extract lines one by one
+	while(getline(pgn,line) && pgn.is_open()) //extract lines one by one
 	{
 		//istringstream iss(line); //to get string tokens
 		//logic for parameter extration from the string

@@ -30,6 +30,7 @@
 ##
 ################################################################################
 import rospy
+import rospkg
 import chess
 import chess.uci
 import chess.pgn
@@ -38,6 +39,7 @@ import os
 from std_msgs.msg import Int32,String,Bool
 from chess_bot.msg import ui_data
 
+file_path=rospkg.RosPack().get_path('chess_bot')+"/files";
 eng=chess.uci.popen_engine("stockfish") #initialize chess engine
 brd=chess.Board() #global chess board declaration
 game=chess.pgn.Game() #global game handle declaration
@@ -58,7 +60,8 @@ setBoardFlag=False #flag to send fen to BoardUI
 
 ################################### Helping Functions for PGN Handling and crash management
 def logger(game,string):
-	log=open("/home/prabin/chess/Final/log.txt","a")
+	global file_path
+	log=open(file_path+"/log.txt","a")
 	log.write(game.headers["Event"]+','+game.headers["White"]+','+game.headers["Black"]+','+game.headers["Round"]+','+time.ctime()+','+string+'\n')
 	log.close()
 
@@ -69,8 +72,8 @@ def kyle():
     	return ll[-1]+':'+parser[ll[1]]+':'+ll[2]
 
 def nth_retrival(event,white,black,round_): #load_game function
-    global game,brd,master,turn
-    new_pgn=open("/home/prabin/chess/Final/gamedata.pgn")
+    global game,brd,master,turn,file_path
+    new_pgn=open(file_path+"/gamedata.pgn")
     i=0
     for i,headers in chess.pgn.scan_headers(new_pgn):
         if(headers["Event"]==event) and (headers["White"]==white) and (headers["Black"]==black) and (headers["Round"]==round_):
@@ -90,10 +93,11 @@ def nth_retrival(event,white,black,round_): #load_game function
     turn=False
     master=True
 
-def nth_deletion(event,white,black,round_): #delete_game function #here the game variable is local and is used for deletion action
-    new=open("/home/prabin/chess/Final/gamedata.pgn")
+def nth_deletion(event,white,black,round_): #delete_game function: here the game variable is local and is used for deletion action
+	global file_path
+    new=open(file_path+"/gamedata.pgn")
     i=0
-    game_data=open("/home/prabin/chess/Final/tempo.pgn","w")
+    game_data=open(file_path+"/tempo.pgn","w")
     for i,headers in chess.pgn.scan_headers(new):
         if(headers["Event"]==event) and (headers["White"]==white) and (headers["Black"]==black) and (headers["Round"]==round_):
             continue
@@ -107,8 +111,26 @@ def nth_deletion(event,white,black,round_): #delete_game function #here the game
             exporter=chess.pgn.FileExporter(game_data)
             game.accept(exporter)
     game_data.close()
-    os.remove("/home/prabin/chess/Final/gamedata.pgn")
-    os.rename("/home/prabin/chess/Final/tempo.pgn","/home/prabin/chess/Final/gamedata.pgn")
+    os.remove(file_path+"/gamedata.pgn")
+    os.rename(file_path+"/tempo.pgn",file_path+"/gamedata.pgn")
+
+def ui_list_initializer(game):
+	global file_path
+	new_text = open(file_path+"/uci_list.txt","w")
+	if(game.headers["Black"]=="Stockfish"):
+		tagA="0 ";tagB="1 ";
+	else:
+		tagA="1 ";tagB="0 ";
+	node = game.root().variations[0];node_ = game.end();
+	while(node.move.uci()!=node_.move.uci()):
+		try:
+			new_text.write( tagA+node.move.uci()+"\n" )
+			node = node.variations[0]
+			new_text.write( tagB+node.move.uci()+"\n" )
+			node = node.variations[0]
+		except:
+			pass
+	new_text.close()
 
 def new_game(event,white,black,round_):
 	global game,brd,newGameFlag
@@ -136,16 +158,16 @@ def restart_game():
 	logger(game,'restart')
 
 def save_game():
-	global game
-	if os.path.exists("/home/prabin/chess/Final/gamedata.pgn"): #checking the presence of a previously saved game with equal parameters
-		pgn_=open("/home/prabin/chess/Final/gamedata.pgn")
+	global game,file_path
+	if os.path.exists(file_path+"/gamedata.pgn"): #checking the presence of a previously saved game with equal parameters
+		pgn_=open(file_path+"/gamedata.pgn")
 		for i,headers in chess.pgn.scan_headers(pgn_):
 			if(headers["Event"]==game.headers["Event"]) and (headers["White"]==game.headers["White"]) and (headers["Black"]==game.headers["Black"]) and (headers["Round"]==game.headers["Round"]):
 				pgn_.close()
 				nth_deletion(game.headers["Event"],game.headers["White"],game.headers["Black"],game.headers["Round"])
 				break
 		pgn_.close()
-	pgn_=open("/home/prabin/chess/Final/gamedata.pgn","a")
+	pgn_=open(file_path+"/gamedata.pgn","a")
 	exporter = chess.pgn.FileExporter(pgn_)
 	game.accept(exporter)
 	pgn_.close()
@@ -167,8 +189,8 @@ def undo_move():
 		print('Nothing To Undo!')
 
 def backup_game(move):
-	global game,node
-	pgn=open("/home/prabin/chess/Final/temp.pgn","w")
+	global game,node,file_path
+	pgn=open(file_path+"/temp.pgn","w")
 	node=game.end()
 	node = node.add_variation(chess.Move.from_uci(move))
 	exporter = chess.pgn.FileExporter(pgn)
@@ -176,12 +198,12 @@ def backup_game(move):
 	pgn.close()
 
 def quit_game():
-	global game,quit_flag
-	if os.path.exists("/home/prabin/chess/Final/temp.pgn"):
-		os.remove("/home/prabin/chess/Final/temp.pgn")
+	global eng,quit_flag,file_path
+	if os.path.exists(file_path+"/temp.pgn"):
+		os.remove(file_path+"/temp.pgn")
 	eng.quit()
-	quit_flag=True
 	logger(game,'quit')
+	quit_flag=True
 ################################################################################
 
 ############################### Helping Functions for control system and Arduino
@@ -229,14 +251,13 @@ def diff(s):
     return reil
 
 #arduino steps generation
-dict={'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
+dict1={'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7};
 def arduino_steps(string,flag):
         ret_string=""
-
         irow_8=8-int(string[1])
-        icol_8=dict[string[0]]
+        icol_8=dict1[string[0]]
         frow_8=8-int(string[3])
-        fcol_8=dict[string[2]]
+        fcol_8=dict1[string[2]]
         irow_16=irow_8*2+1
         icol_16=icol_8*2+1
         frow_16=frow_8*2+1
@@ -244,14 +265,14 @@ def arduino_steps(string,flag):
 
         r_diff=frow_16 - irow_16
         c_diff=fcol_16 - icol_16
-        if flag==0:
+        if flag==0:  #normal move
                 ret_string+=normal_move(irow_16 - 7,icol_16 - 7);
                 ret_string+=",1,"
                 ret_string+= normal_move(r_diff,c_diff);
                 ret_string+=",0,"
                 ret_string+=normal_move(7-frow_16,7-fcol_16)
 
-        if flag==1:
+        if flag==1:  #killing move
                 a=0
                 b=0
                 check_kill=-1
@@ -260,19 +281,19 @@ def arduino_steps(string,flag):
                 ret_string+=normal_move(frow_16-7,fcol_16-7)+",1,"
                 a,b=killing_move(frow_16,fcol_16)
                 ret_string+=normal_move(a,b)+",0,"+normal_move( -1*(a+r_diff), -1*(b+c_diff) )+",1,"+normal_move(r_diff,c_diff)+",0,"+normal_move(7-frow_16,7-fcol_16)
-        if flag==2:
+        if flag==2:  #en passant
                 ret_string+=normal_move(irow_16-7,fcol_16-7)+",1,"
                 a,b=killing_move(irow_16,fcol_16)
 
                 ret_string+=normal_move(a,b)+",0,"+normal_move( -1*(a), -1*(b+c_diff) )+",1,"+normal_move(r_diff,c_diff)+",0,"+normal_move(7-frow_16,7-fcol_16)
 
-        if flag==3:
+        if flag==3: #casling move
                 ret_string+=normal_move(irow_16-7,icol_16-7)+",1,"
                 if(fcol_8>icol_8):
                         ret_string+="x_4_1,0,x_2_1,1,"+normal_move(0,-4)+",0,"+normal_move(7-frow_16,5-icol_16)
                 else:
                         ret_string+="x_4_0,0,x_4_0,1,"+normal_move(0,6)+",0,"+normal_move(7-frow_16,9-icol_16)
-	ret_string=ret_string.replace('_','')
+        ret_string=ret_string.replace('_','')
         ret_string=ret_string.replace(',1,','H')
         ret_string=ret_string.replace(',0,','L')
         ret_string=ret_string.replace(',','')
@@ -282,39 +303,29 @@ def normal_move(r_diff,c_diff):
         ret_string=""
         check_row=-1
         check_col=-1
-        if r_diff<=0:
+        if(r_diff==0):
                 ret_string+="y_1_1"
-                check_row=0
+                if(c_diff>0):
+                        ret_string+=",x_"+str(c_diff)+"_1"
+                else:
+                        ret_string+=",x"+str(abs(c_diff))+"_0"
+                ret_string+=",y_1_0";
+        elif(c_diff==0):
+                ret_string+="x_1_0"
+                if(r_diff>0):
+                        ret_string+=",y_"+str(r_diff)+"_0"
+                else:
+                        ret_string+=",y_"+str(abs(r_diff))+"_1"
+                ret_string+="x_1_1"
         else:
-                ret_string+="y_1_0"
-                check_row=1
-        if r_diff==0:
-                check_row=1
-
-        if c_diff<0:
-                ret_string+=",x_"+str( abs(c_diff)-1)+"_0"
-                check_col=0
-
-        elif c_diff>0:
-                ret_string+=",x_"+str(c_diff-1)+"_1"
-                check_col=1
-        elif c_diff==0:
-                ret_string+=",x_1_0"
-                check_col=1
-        else :
-                pass
-
-        if r_diff>0:
-                ret_string+=",y_"+str(r_diff)+"_0"
-        elif r_diff<0:
-                ret_string+=",y_"+str(abs(r_diff))+"_1"
-        elif r_diff==0:
-                ret_string+=",y_2_0"
-        else:
-                pass
-        ret_string+=",x_1_"+str(check_col)+",y_1_"+str(check_row)
-
-
+                if(r_diff>0 and c_diff>0):
+                        ret_string+="y_1_0"+",x_"+str(c_diff-1)+"_1"+",y_"+str(r_diff-1)+"_0"+",x_1_1"
+                elif(r_diff>0 and c_diff<0):
+                        ret_string+="y_1_0"+",x_"+str(abs(c_diff)-1)+"_0"+",y_"+str(r_diff-1)+"_0"+",x_1_0"
+                elif(r_diff<0 and c_diff>0):
+                        ret_string+="y_1_1"+",x_"+str(c_diff-1)+"_1"+",y_"+str(abs(r_diff)-1)+"_1"+",x_1_1"
+                elif(r_diff<0 and c_diff<0):
+                        ret_string+="y_1_1"+",x_"+str(abs(c_diff)-1)+"_0"+",y_"+str(abs(r_diff)-1)+"_1"+",x_1_0"
         return ret_string;
 
 def killing_move(frow_16,fcol_16):
@@ -337,18 +348,18 @@ def killing_move(frow_16,fcol_16):
         else:
                 check_kill=check_kill1
         if(check_kill==0):
-                a=-2-frow_16
+                a=-1-frow_16
                 b=0
                 #ret_string+=normal_move(-2-frow_16,0)+",0,"+normal_move()
         elif (check_kill==1):
                 a=0
-                b=-2-fcol_16
+                b=-1-fcol_16
         elif (check_kill==2):
                 a=17-frow_16
                 b=0
         elif (check_kill==3):
                 a=0
-                b=17-fcol_16
+                b=18-fcol_16
         return a,b
 #end arduino steps generation
 
@@ -388,7 +399,7 @@ def uicall(uidat):
 #########################################################
 
 def main_():
-	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,newGameFlag,setBoardFlag,eng,game,brd,node,quit_flag
+	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,newGameFlag,setBoardFlag,eng,game,brd,node,quit_flag,file_path
 	rospy.init_node('chess_ai')
 	flagpub = rospy.Publisher('turn_flag', Bool, queue_size=10)
 	uipub = rospy.Publisher('ui_send', ui_data, queue_size=10)
@@ -397,9 +408,9 @@ def main_():
 	rospy.Subscriber('board_string', String, decode)
 	rospy.Subscriber('ui_recv', ui_data, uicall)
 	
-	if os.path.exists("/home/prabin/chess/Final/temp.pgn"): #TODO:add turn setup after recovery
+	if os.path.exists(file_path+"/temp.pgn"): #TODO:add turn setup after recovery
 		print("Previous game crashed\n")
-		new_pgn=open("/home/prabin/chess/Final/temp.pgn")
+		new_pgn=open(file_path+"/temp.pgn")
 		game=chess.pgn.read_game(new_pgn)
 		node=game.end()
 		brd=game.board()
@@ -416,8 +427,7 @@ def main_():
 	while not rospy.is_shutdown():
 		if quit_flag==True:
 			break
-		#this occurs for Newgame
-		if newGameFlag==True:
+		if newGameFlag==True: #this occurs for Newgame
 			time.sleep(2)
 			temp=ui_data()
 			temp.type=0
@@ -448,12 +458,12 @@ def main_():
 						temp.type=5
 						temp.sys="Game Over its a draw please \nrestart the game to play again"
 						uipub.publish(temp)
-						eng.quit()
+						quit_game()
 					if brd.is_checkmate():
 						temp.type=5
 						temp.sys="Game over congratulations you won please \nrestart the game to play again"
 						uipub.publish(temp)
-						eng.quit()
+						quit_game()
 					turn=True
 				else: #for illigal move
 					print('incorrect move')
@@ -473,8 +483,8 @@ def main_():
 				move_flag=checking_(bst)
 				brd.push(bst)
 				outdata=bst.uci()
-                		print(outdata)
-                		backup_game(outdata)
+                print(outdata)
+                backup_game(outdata)
 				temp.type=4
 				temp.mo=outdata
 				uipub.publish(temp)
@@ -506,12 +516,12 @@ def main_():
 					temp.type=5
 					temp.sys="Game Over its a draw please \nrestart the game to play again"
 					uipub.publish(temp)
-					eng.quit()
+					quit_game()
 				if brd.is_checkmate():
 					temp.type=5
 					temp.sys="Game Over Stockfish won please \nrestart the game to play again"
 					uipub.publish(temp)
-					eng.quit()
+					quit_game()
 				turn=False
 			setBoardFlag=True
 		if turn==False:

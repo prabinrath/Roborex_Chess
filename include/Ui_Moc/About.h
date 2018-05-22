@@ -35,7 +35,11 @@
 #define ABOUT_H
 
 #include <QMainWindow>
-#include <ros/ros.h>
+#include <QString>
+#include <QDebug>
+#include <fstream>
+#include <string>
+#include <ros/package.h>
 #include "ui_About.h"
 
 namespace Ui {
@@ -47,12 +51,12 @@ class About : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit About(ros::NodeHandle _nh,QWidget *parent = 0);
+    explicit About(string tag,QWidget *parent = 0);
     ~About();
+    void setOutput(string query_tag);
     
 private:
     Ui::About *ui;
-    ros::NodeHandle nh;
 };
 
 #endif // ABOUT_H

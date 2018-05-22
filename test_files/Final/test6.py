@@ -101,20 +101,37 @@ def kyle():
     	ll=current_time.split()
     	return ll[-1]+':'+parser[ll[1]]+':'+ll[2]
 
-##########################################################################################################################
+def ui_list_initializer(game):
+	new_text = open("/home/prabin/catkin_ws/src/chess_bot/test_files/Final/uci_.txt","w")
+	if(game.headers["Black"]=="Stockfish"):
+		tagA="0 ";tagB="1 ";
+	else:
+		tagA="1 ";tagB="0 ";
+	node = game.root().variations[0];node_ = game.end();
+	while(node.move.uci()!=node_.move.uci()):
+		try:
+			new_text.write( tagA+node.move.uci()+"\n" )
+			node = node.variations[0]
+			new_text.write( tagB+node.move.uci()+"\n" )
+			node = node.variations[0]
+		except:
+			pass
+	new_text.close()
 
+##########################################################################################################################
 #Game initialization
 if os.path.exists("/home/prabin/chess/Final/temp.pgn"): #add turn setup after recovery
 	print("Previous game crashed\n")
 	new_pgn=open("/home/prabin/chess/Final/temp.pgn")
-        game=chess.pgn.read_game(new_pgn)
-        node=game.end()
-        brd=game.board()
-        for move in game.main_line():
+	game=chess.pgn.read_game(new_pgn)
+	ui_list_initializer(game)
+	node=game.end()
+	brd=game.board()
+	for move in game.main_line():
 		brd.push(move)
 	print(str(brd)+'\n')
-    	logger(game,"Crashed Game")
-    	'''
+	logger(game,"Crashed Game")
+	'''
 	if ' b ' in brd.fen(): 
 		flag=False
 	'''                  
@@ -141,6 +158,7 @@ else:
 			choice=3
 		else:
 			game=loaded[0]
+			ui_list_initializer(game)
 			node=game.end()
 			logger(game,"retrived")
 			brd=loaded[1]
