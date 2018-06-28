@@ -64,7 +64,7 @@ void About::setOutput(string query_tag)
 					if(temp=="#")
 						{break;}
 					else
-					{output+=temp;output+="\n";}
+						{output+=temp;output+="\n";}
 				}
 			}
 			file_tag="";

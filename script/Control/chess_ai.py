@@ -418,18 +418,17 @@ def main_():
 			brd.push(move)
 		#print(str(brd)+'\n')
 		#TODO:setupUI code
-	    	logger(game,"Crashed Game")
-	    	'''
+		logger(game,"Crashed Game")
+		'''
 		if ' b ' in brd.fen():
 		''' 
-
+	temp=ui_data()
 	rate = rospy.Rate(20)
 	while not rospy.is_shutdown():
 		if quit_flag==True:
 			break
 		if newGameFlag==True: #this occurs for Newgame
 			time.sleep(2)
-			temp=ui_data()
 			temp.type=0
 			temp.sys="Enter 'yes' to move first \nand press select"
 			uipub.publish(temp)
@@ -437,7 +436,7 @@ def main_():
 		if master==True:
 			flagpub.publish(turn)
 			if turn==False: #user turn
-                		print('user turn')
+                print('user turn')
 				print(indata)
 				if value==5: #for respawn move
 					temp.type=2
