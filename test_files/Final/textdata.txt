@@ -9,6 +9,4 @@ Subham Sahoo
 #
 
 #score
-Neelam 100
-Prabin 50
 #

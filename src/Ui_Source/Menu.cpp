@@ -38,6 +38,39 @@ Menu::Menu(ros::NodeHandle _nh, QWidget *parent) :
     ui(new Ui::Menu), nh(_nh)
 {
 	ui->setupUi(this);
+	logo_pixmap.load("/home/prabin/catkin_ws/src/chess_bot/utils/chess_logo.jpg");
+	ui->logo->setPixmap(logo_pixmap);
+	set_tab = nh.advertise<std_msgs::Int32>("menu_data", 1000);
+}
+
+void Menu::on_newgame_clicked()
+{
+	tab_flg.data=1;
+	set_tab.publish(tab_flg);
+}
+
+void Menu::on_gamelist_clicked()
+{
+	tab_flg.data=2;
+	set_tab.publish(tab_flg);
+}
+
+void Menu::on_record_clicked()
+{
+	tab_flg.data=3;
+	set_tab.publish(tab_flg);
+}
+
+void Menu::on_instr_clicked()
+{
+	tab_flg.data=4;
+	set_tab.publish(tab_flg);
+}
+
+void Menu::on_credits_clicked()
+{
+	tab_flg.data=5;
+	set_tab.publish(tab_flg);
 }
 
 Menu::~Menu()

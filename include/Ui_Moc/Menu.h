@@ -35,7 +35,9 @@
 #define MENU_H
 
 #include <QMainWindow>
+#include <QPixmap>
 #include <ros/ros.h>
+#include <std_msgs/Int32.h>
 #include "ui_Menu.h"
 
 namespace Ui {
@@ -49,10 +51,20 @@ class Menu : public QMainWindow
 public:
     explicit Menu(ros::NodeHandle _nh,QWidget *parent = 0);
     ~Menu();
-    
+    QPixmap logo_pixmap;
+
+private slots:
+	void on_newgame_clicked();
+	void on_gamelist_clicked();
+	void on_record_clicked();
+	void on_instr_clicked();
+	void on_credits_clicked();
+   
 private:
     Ui::Menu *ui;
     ros::NodeHandle nh;
+    ros::Publisher set_tab;
+    std_msgs::Int32 tab_flg;
 };
 
 #endif // MENU_H

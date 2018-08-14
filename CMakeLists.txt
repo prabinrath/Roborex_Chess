@@ -14,7 +14,7 @@ image_transport
 )
 
 ## Declare ROS messages and services
-add_message_files(FILES botdata.msg ui_data.msg)
+add_message_files(FILES botdata.msg ui_data.msg feature.msg)
 
 ## Generate added messages and services
 generate_messages(DEPENDENCIES std_msgs sensor_msgs)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>331</width>
-    <height>347</height>
+    <height>421</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="confirm">
     <property name="geometry">
      <rect>
-      <x>19</x>
-      <y>258</y>
+      <x>20</x>
+      <y>320</y>
       <width>281</width>
       <height>22</height>
      </rect>
@@ -30,10 +30,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Confirm</string>
+     <string>Confirm and Play</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -65,20 +65,7 @@
         </font>
        </property>
        <property name="text">
-        <string>White</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Black</string>
+        <string>Name</string>
        </property>
       </widget>
      </item>
@@ -97,7 +84,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -115,15 +102,50 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="white"/>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="black"/>
+      <widget class="QLineEdit" name="name"/>
      </item>
      <item>
       <widget class="QLineEdit" name="round"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>250</y>
+      <width>179</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tick to move first.</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="first">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>260</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

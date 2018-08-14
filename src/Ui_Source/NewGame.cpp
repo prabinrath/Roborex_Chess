@@ -33,11 +33,103 @@
 
 #include "Ui_Moc/NewGame.h"
 
+string file_path = ros::package::getPath("chess_bot")+"/files";
+
 NewGame::NewGame(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::NewGame), nh(_nh)
 {
 	ui->setupUi(this);
+	pub = nh.advertise<chess_bot::feature>("interactions", 1000);
+}
+
+bool NewGame::checkPresence(string head)
+{
+	bool is_present=false;
+	ifstream pgn;
+	pgn.open(file_path+"/gamedata.pgn"); //open the pgn file in read mode
+	if(pgn.is_open())
+	{
+		qDebug()<<"File opened\n";
+	}
+	else
+	{
+		qDebug()<<"Couldnt open the file\n";
+	}
+	string line,parm,send; //required string variables
+	while(getline(pgn,line) && pgn.is_open()) //extract lines one by one
+	{
+		if(line[0]=='[')
+		{
+			int i=1;
+			while(line[i]!=' ')
+			{
+				parm.push_back(line[i]);i++;
+			}
+			i+=2;
+			if(parm=="Event" || parm=="White" || parm=="Black" || parm=="Round")
+			{
+				while(line[i]!='"')
+				{
+					send.push_back(line[i]);i++;
+				}
+				if(parm!="Black")
+				{
+					send.push_back(',');
+			 	}
+			}
+			parm="";
+		}
+		else if(line[0]='\n')
+		{
+			if(send!="")
+			{
+				if(send==head)
+					is_present=true;
+			}
+			send="";
+		}
+	}
+	pgn.close();
+	return is_present;
+}
+
+void NewGame::on_confirm_clicked()
+{
+   if(ui->event->toPlainText()!="" && ui->name->toPlainText()!="" && ui->round->toPlainText()!="")
+   {
+	   QString header;
+	   header+=ui->event->toPlainText()+","+ui->round->toPlainText()+",";
+	   if(ui->first->isChecked())
+	   		header+=ui->name->toPlainText()+",Stockfish";
+	   else
+	   		header+="Stockfish,"+ui->name->toPlainText();
+
+	   if(checkPresence(header.toStdString())==true)
+	   	{
+	   		QMessageBox::StandardButton reply=QMessageBox::question(this,tr("Concurrency Found"), tr("Incomplete game with similar parameters is already present in the Saved Game List, Would you like to delete that game and start a new one?") ,QMessageBox::Yes|QMessageBox::No);
+	   		if(reply==QMessageBox::Yes)
+			{
+				fetmsg.head=header.toStdString();
+				fetmsg.flag=3;
+				pub.publish(fetmsg);
+				fetmsg.flag=1;
+				pub.publish(fetmsg);
+				this->hide();
+			}
+	   	}
+	   	else
+	   	{
+	   		fetmsg.head=header.toStdString();
+	   		fetmsg.flag=1;
+			pub.publish(fetmsg);
+			this->hide();
+	   	}
+	}
+	else
+	{
+		QMessageBox::information( this, tr("Information"), tr("None of the fields can be left blank") );
+	}		
 }
 
 NewGame::~NewGame()

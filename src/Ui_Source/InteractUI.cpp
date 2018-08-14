@@ -47,16 +47,16 @@ void *ROS_task(void *q)
 	while(ros::ok() && dstr==false)
    	{
     	if(pub_cntrl==true)
-	{
-		chess_bot::ui_data toui;
-		toui.type=swh;
-		if(swh==0 || swh==2)
 		{
-			toui.sys=indat.toStdString();
+			chess_bot::ui_data toui;
+			toui.type=swh;
+			if(swh==0 || swh==2)
+			{
+				toui.sys=indat.toStdString();
+			}
+			aisend.publish(toui);
+			pub_cntrl=false;
 		}
-		aisend.publish(toui);
-		pub_cntrl=false;
-	}
     	loop_rate.sleep();
     	ros::spinOnce();
    	}

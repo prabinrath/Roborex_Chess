@@ -35,8 +35,17 @@
 #define LOADDELETE_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QFrame>
+#include <QDebug>
 #include <ros/ros.h>
+#include <ros/package.h>
+#include <fstream>
+#include <string>
+#include "GameTile.h"
 #include "ui_LoadDelete.h"
+#include "chess_bot/feature.h"
 
 namespace Ui {
 class LoadDelete;
@@ -48,11 +57,14 @@ class LoadDelete : public QMainWindow
 
 public:
     explicit LoadDelete(ros::NodeHandle _nh,QWidget *parent = 0);
+    void setScrollArea(const chess_bot::feature::ConstPtr& msg);
+    void loadTiles();
     ~LoadDelete();
     
 private:
     Ui::LoadDelete *ui;
     ros::NodeHandle nh;
+    ros::Suscriber sub;
 };
 
 #endif // LOADDELETE_H

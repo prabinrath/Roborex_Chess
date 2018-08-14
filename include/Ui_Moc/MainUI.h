@@ -35,8 +35,17 @@
 #define MAINUI_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QProcess>
 #include <ros/ros.h>
+#include <std_msgs/Int32.h>
+#include "Menu.h"
+#include "InteractUI.h"
+#include "NewGame.h"
+#include "LoadDelete.h"
+#include "About.h"
 #include "ui_MainUI.h"
+#include "chess_bot/feature.h"
 
 namespace Ui {
 class MainUI;
@@ -48,11 +57,20 @@ class MainUI : public QMainWindow
 
 public:
     explicit MainUI(ros::NodeHandle _nh,QWidget *parent = 0);
+    void closeEvent(QCloseEvent *event);
+    void setUI(const chess_bot::feature::ConstPtr& msg);
+    void tabControl(const std_msgs::Int32::ConstPtr& msg);
     ~MainUI();
     
 private:
     Ui::MainUI *ui;
-    ros::NodeHandle nh;
+    QProcess *boardUI=NULL; //to launch BoardUI
+    InteractUI *interactUI=NULL; //to launch InteractUI in a separate window
+    ros::NodeHandle nh; 
+    chess_bot::feature fetmsg; //for interactions with chess_ai
+    ros::Publisher feature_command; //to publish the quit event
+    ros::Suscriber set,menu_command; //to connect Menu with main UI
+    int menu_flg,newgame_flg,loadgame_flg,record_flg,inst_flg,credit_flg; //flags to prevent ambiguity of multiple UI instances 
 };
 
 #endif // MAINUI_H

@@ -35,8 +35,15 @@
 #define NEWGAME_H
 
 #include <QMainWindow>
+#include <QDebug>
 #include <ros/ros.h>
+#include <ros/package.h>
+#include <fstream>
+#include <string>
 #include "ui_NewGame.h"
+#include "chess_bot/feature.h"
+
+using namespace std;
 
 namespace Ui {
 class NewGame;
@@ -49,10 +56,16 @@ class NewGame : public QMainWindow
 public:
     explicit NewGame(ros::NodeHandle _nh,QWidget *parent = 0);
     ~NewGame();
-    
+    bool checkPresence(string head);
+
+private slots:
+	void on_confirm_clicked();
+
 private:
     Ui::NewGame *ui;
     ros::NodeHandle nh;
+    ros::Publisher pub;
+    chess_bot::feature fetmsg;
 };
 
 #endif // NEWGAME_H

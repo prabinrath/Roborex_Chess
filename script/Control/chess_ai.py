@@ -37,7 +37,7 @@ import chess.pgn
 import time
 import os
 from std_msgs.msg import Int32,String,Bool
-from chess_bot.msg import ui_data
+from chess_bot.msg import ui_data,feature
 
 file_path=rospkg.RosPack().get_path('chess_bot')+"/files";
 eng=chess.uci.popen_engine("stockfish") #initialize chess engine
@@ -54,9 +54,10 @@ respn="#" #respawn character
 cur_fen="" #to store fen
 illigal=True #for detecting illigal moves
 rwait=True #flag for system to stall during stockfish respawn
-newGameFlag=False #flag for asking move turn during new game
 quit_flag=False #flag to break the master loop
 setBoardFlag=False #flag to send fen to BoardUI
+setupUI=False #flag to setup InteractUI and BoardUI or scroll area in LoadGame
+setupUI_flg=False #False to setup InteractUI and BoardUI and True to setup scroll area in LoadGame
 
 ################################### Helping Functions for PGN Handling and crash management
 def logger(game,string):
@@ -71,8 +72,8 @@ def kyle():
     	ll=current_time.split()
     	return ll[-1]+':'+parser[ll[1]]+':'+ll[2]
 
-def nth_retrival(event,white,black,round_): #load_game function
-    global game,brd,master,turn,file_path
+def nth_retrival(event,round_,white,black): #load_game function
+    global game,brd,turn,file_path,setupUI,setupUI_flg
     new_pgn=open(file_path+"/gamedata.pgn")
     i=0
     for i,headers in chess.pgn.scan_headers(new_pgn):
@@ -87,14 +88,14 @@ def nth_retrival(event,white,black,round_): #load_game function
             brd=game.board()
             for move in game.main_line():
                 brd.push(move)
-	    #print(str(brd)+'\n')
-    #TODO:setupUI code
+    ui_list_initializer(game)
+    setupUI_flg=False
+	setupUI=True
     logger(game,"retrived")
     turn=False
-    master=True
 
-def nth_deletion(event,white,black,round_): #delete_game function: here the game variable is local and is used for deletion action
-	global file_path
+def nth_deletion(event,round_,white,black): #delete_game function: here the game variable is local and is used for deletion action
+	global file_path,setupUI,setupUI_flg
     new=open(file_path+"/gamedata.pgn")
     i=0
     game_data=open(file_path+"/tempo.pgn","w")
@@ -113,6 +114,8 @@ def nth_deletion(event,white,black,round_): #delete_game function: here the game
     game_data.close()
     os.remove(file_path+"/gamedata.pgn")
     os.rename(file_path+"/tempo.pgn",file_path+"/gamedata.pgn")
+    setupUI_flg=True
+    setupUI=True
 
 def ui_list_initializer(game):
 	global file_path
@@ -132,8 +135,8 @@ def ui_list_initializer(game):
 			pass
 	new_text.close()
 
-def new_game(event,white,black,round_):
-	global game,brd,newGameFlag
+def new_game(event,round_,white,black):
+	global game,brd,turn,master,setupUI,setupUI_flg
 	brd=chess.Board()
 	game=chess.pgn.Game()
 	game.headers["Event"]=event
@@ -141,8 +144,13 @@ def new_game(event,white,black,round_):
 	game.headers["Black"]=black
 	game.headers["Round"]=round_
 	game.headers["Date" ] =kyle()
+	setupUI_flg=False
+	setupUI=True
+	time.sleep(2);
+	if white=="Stockfish":
+		turn=True
+		master=True
 	logger(game,"New game")
-	newGameFlag=True
 
 def restart_game():
 	global game,brd,setBoardFlag
@@ -182,7 +190,6 @@ def undo_move():
 		node.parent.remove_variation(brd.pop())
 		del node
 		node=game.end()
-		print(brd)
 		setBoardFlag=True
 		logger(game,'undo')
 	else:
@@ -381,7 +388,7 @@ def checking_(string_):
 def decode(mv):
 	global indata,master
 	indata=diff(mv.data.split(','))
-    	if(indata!=''):
+	if(indata!=''):
 		master=True
 
 def uicall(uidat):
@@ -396,17 +403,41 @@ def uicall(uidat):
 		respn=uidat.sys
 	elif uidat.type==3:
 		illigal=False
+		
+def interact(income):
+	if income.head!='':
+		data=income.head.split(' ')
+		if income.flag==1:
+			new_game(head[0],head[1],head[2],head[3])
+		elif income.flag==2:
+			nth_retrival(head[0],head[1],head[2],head[3])
+		elif income.flag==3:
+			nth_deletion(head[0],head[1],head[2],head[3])
+	else:
+		if income.flag==1:
+			save_game()
+		elif income.flag==2:
+			undo_move()
+		elif income.flag==3:
+			restart_game()
+		elif income.flag==4:
+			quit_game()
+		elif income.flag==5:
+			save_game()
+			quit_game()
 #########################################################
 
 def main_():
-	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,newGameFlag,setBoardFlag,eng,game,brd,node,quit_flag,file_path
-	rospy.init_node('chess_ai')
+	global master,turn,indata,cur_fen,respn,illigal,value,outdata,rwait,setBoardFlag,eng,game,brd,node,quit_flag,file_path,setupUI,setupUI_flg
+	rospy.init_node('chess_ai') #all publishers are local to main
 	flagpub = rospy.Publisher('turn_flag', Bool, queue_size=10)
 	uipub = rospy.Publisher('ui_send', ui_data, queue_size=10)
+	uiset = rospy.Publisher('ui_setup', feature, queue_size=10)
 	fenpub = rospy.Publisher('fendata', String, queue_size=10)
 	ardpub = rospy.Publisher('move_seq', String, queue_size=10)
 	rospy.Subscriber('board_string', String, decode)
 	rospy.Subscriber('ui_recv', ui_data, uicall)
+	rospy.Subscriber('interactions', feature, interact)
 	
 	if os.path.exists(file_path+"/temp.pgn"): #TODO:add turn setup after recovery
 		print("Previous game crashed\n")
@@ -416,23 +447,29 @@ def main_():
 		brd=game.board()
 		for move in game.main_line():
 			brd.push(move)
-		#print(str(brd)+'\n')
-		#TODO:setupUI code
+		ui_list_initializer(game)
+		setupUI_flg=False
+		setupUI=True
 		logger(game,"Crashed Game")
 		'''
 		if ' b ' in brd.fen():
 		''' 
+		
 	temp=ui_data()
+	ui_setup_msg=feature()
+	
 	rate = rospy.Rate(20)
 	while not rospy.is_shutdown():
 		if quit_flag==True:
 			break
-		if newGameFlag==True: #this occurs for Newgame
-			time.sleep(2)
-			temp.type=0
-			temp.sys="Enter 'yes' to move first \nand press select"
-			uipub.publish(temp)
-			newGameFlag=False
+		if setupUI==True:
+			ui_setup_msg.head=""
+			if setupUI_flg==False:
+				ui_setup_msg.flag=1
+			else
+				ui_setup_msg.flag=2
+			uiset.publish(ui_setup_msg)
+			setupUI=False
 		if master==True:
 			flagpub.publish(turn)
 			if turn==False: #user turn

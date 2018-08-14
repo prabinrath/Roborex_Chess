@@ -1,0 +1,2 @@
+string head
+int flag
