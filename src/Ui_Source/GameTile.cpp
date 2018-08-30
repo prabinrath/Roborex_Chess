@@ -33,11 +33,46 @@
 
 #include "Ui_Moc/GameTile.h"
 
-GameTile::GameTile(ros::NodeHandle _nh, QWidget *parent) :
+GameTile::GameTile(string hd,ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::GameTile), nh(_nh)
 {
 	ui->setupUi(this);
+	header_data=hd;
+	pub = nh.advertise<chess_bot::feature>("interactions", 1000);
+	string temp="";
+	for(int i=0;i<hd.size();i++)
+	{
+		if(hd[i]!=',')
+			temp.push_back(hd[i]);
+		else
+		{
+			headers.push_back(temp);
+			temp="";
+		}
+	}
+	headers.push_back(temp);
+	
+	ui->event.setText(QString(headers[0].c_str()));
+	ui->round.setText(QString(headers[1].c_str()));
+	ui->white.setText(QString(headers[2].c_str()));
+	ui->black.setText(QString(headers[3].c_str()));	
+}
+
+void GameTile::on_play_clicked()
+{
+	chess_bot::feature fetmsg;
+	fetmsg.head=header_data;
+	fetmsg.flag=2;
+	pub.publish(fetmsg);
+}
+
+void GameTile::on_del_clicked()
+{
+	chess_bot::feature fetmsg;
+	fetmsg.head=header_data;
+	fetmsg.flag=3;
+	pub.publish(fetmsg);
 }
 
 GameTile::~GameTile()

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(chess_bot)
+add_definitions(-std=c++11)
 
 ## Find catkin and any catkin packages
 find_package(catkin REQUIRED COMPONENTS
@@ -60,9 +61,9 @@ add_executable(chess_ui src/Ui_Source/main.cpp)
 target_link_libraries(chess_ui chess_bot_ui)
 
 add_executable(frame_pub src/Image_processing/frame_pub.cpp)
-target_link_libraries(frame_pub ${catkin_LIBRARIES}${OpenCV_LIBS})
+target_link_libraries(frame_pub ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(frame_pub chess_bot_generate_messages_cpp)
 
 add_executable(frame_handler src/Image_processing/frame_handler.cpp)
-target_link_libraries(frame_handler ${catkin_LIBRARIES}${OpenCV_LIBS})
+target_link_libraries(frame_handler ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(frame_handler chess_bot_generate_messages_cpp)

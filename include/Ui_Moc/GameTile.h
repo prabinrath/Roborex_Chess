@@ -36,7 +36,10 @@
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include <string>
+#include <vector>
 #include "ui_GameTile.h"
+#include "chess_bot/feature.h"
 
 namespace Ui {
 class GameTile;
@@ -47,12 +50,19 @@ class GameTile : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit GameTile(ros::NodeHandle _nh,QWidget *parent = 0);
+    explicit GameTile(string hd,ros::NodeHandle _nh,QWidget *parent = 0);
     ~GameTile();
+
+private slots:
+	void on_play_clicked();
+	void on_del_clicked();
     
 private:
     Ui::GameTile *ui;
+    vector<string> headers;
+    string header_data;
     ros::NodeHandle nh;
+    ros::Publisher pub;
 };
 
 #endif // GAMETILE_H
