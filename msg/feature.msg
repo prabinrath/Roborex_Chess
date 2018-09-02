@@ -1,2 +1,2 @@
 string head
-int flag
+int32 flag

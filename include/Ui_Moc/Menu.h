@@ -39,6 +39,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include "ui_Menu.h"
+using namespace std;
 
 namespace Ui {
 class Menu;

@@ -46,6 +46,7 @@
 #include "GameTile.h"
 #include "ui_LoadDelete.h"
 #include "chess_bot/feature.h"
+using namespace std;
 
 namespace Ui {
 class LoadDelete;
@@ -64,7 +65,7 @@ public:
 private:
     Ui::LoadDelete *ui;
     ros::NodeHandle nh;
-    ros::Suscriber sub;
+    ros::Subscriber sub;
 };
 
 #endif // LOADDELETE_H

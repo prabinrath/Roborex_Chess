@@ -53,10 +53,10 @@ GameTile::GameTile(string hd,ros::NodeHandle _nh, QWidget *parent) :
 	}
 	headers.push_back(temp);
 	
-	ui->event.setText(QString(headers[0].c_str()));
-	ui->round.setText(QString(headers[1].c_str()));
-	ui->white.setText(QString(headers[2].c_str()));
-	ui->black.setText(QString(headers[3].c_str()));	
+	ui->event->setText(QString(headers[0].c_str()));
+	ui->round->setText(QString(headers[1].c_str()));
+	ui->white->setText(QString(headers[2].c_str()));
+	ui->black->setText(QString(headers[3].c_str()));	
 }
 
 void GameTile::on_play_clicked()

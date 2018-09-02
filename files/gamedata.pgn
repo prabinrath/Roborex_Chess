@@ -1,0 +1,31 @@
+[Event "qwert"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "1"]
+[White "neelam"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 Nc6 4. Qe2 d6 5. d4 exd4 6. Na4 a6 7. Qd2 Nxe4 8.
+Qd3 Qe7 *
+
+[Event "ghui"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "2"]
+[White "Stockfish"]
+[Black "jitu"]
+[Result "*"]
+
+1. c4 e5 2. a4 Nf6 3. a5 Bb4 4. h4 O-O 5. Qc2 Nc6 6. Nf3 d6 *
+
+[Event "qwert"]
+[Site "?"]
+[Date "2018:03:19"]
+[Round "2"]
+[White "Stockfish"]
+[Black "prabin"]
+[Result "*"]
+
+1. e4 e5 2. a4 Nf6 3. Ra3 Bxa3 4. bxa3 Nxe4 5. Qe2 d5 6. d3 Nc5 *
+

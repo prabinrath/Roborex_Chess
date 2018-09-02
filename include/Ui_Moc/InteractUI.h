@@ -35,12 +35,22 @@
 #define INTERACTUI_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QCloseEvent>
+#include <QString>
+#include <QDebug>
+#include <stdio.h>
+#include <fstream>
+#include <string>
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
-#include <QString>
+#include <std_msgs/Int32.h>
+#include <ros/package.h>
 #include "ui_InteractUI.h"
+#include "chess_bot/feature.h"
 #include "chess_bot/ui_data.h"
 //#include "BoardUI.h"
+using namespace std;
 
 namespace Ui {
 class InteractUI;
@@ -54,17 +64,24 @@ public:
     explicit InteractUI(ros::NodeHandle _nh,QWidget *parent = 0);
     ~InteractUI();
     void setUI();
+    void closeEvent(QCloseEvent *event);
     void setflag(const std_msgs::Bool::ConstPtr& msg);
-    void callback(const chess_bot::ui_data::ConstPtr& msg);
+    void ui_callback(const chess_bot::ui_data::ConstPtr& msg);
 private slots:
 	void on_send_clicked();
+	void on_save_clicked();
+	void on_undo_clicked();
+	void on_rst_clicked();
 
 private:
+	int swh,mv_cnt; //swh=flag to switch between messages types of airecv suscriber,mv_cnt=the move counter
+	bool master,save_flag; //master=turn flag for the ui node ,pub_cntrl=publishing control
+	string user_name;
     Ui::InteractUI *ui;
-    //BoardUI *handle;
     ros::NodeHandle nh;
-    ros::Subscriber airecv;
-    ros::Subscriber turn;
+    ros::Publisher aisend,interact,close_ui_flag;
+    ros::Subscriber airecv,turn;
+     //BoardUI *handle;
 };
 
 #endif // INTERACTUI_H

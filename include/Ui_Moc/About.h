@@ -41,6 +41,7 @@
 #include <string>
 #include <ros/package.h>
 #include "ui_About.h"
+using namespace std;
 
 namespace Ui {
 class About;

@@ -35,6 +35,7 @@
 #define NEWGAME_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QDebug>
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -42,7 +43,6 @@
 #include <string>
 #include "ui_NewGame.h"
 #include "chess_bot/feature.h"
-
 using namespace std;
 
 namespace Ui {

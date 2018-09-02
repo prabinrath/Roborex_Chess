@@ -32,9 +32,7 @@
 
 
 #include "Ui_Moc/About.h"
-using namespace std;
-
-string FILE_PATH = ros::package::getPath("chess_bot") + "/files";
+extern string file_path;
 
 About::About(string tag,QWidget *parent) :
     QMainWindow(parent),
@@ -48,7 +46,7 @@ void About::setOutput(string query_tag)
 {
 	string temp,file_tag,output="";
 	ifstream newfile;
-	newfile.open(FILE_PATH+"/textdata.txt",ios::in);
+	newfile.open(file_path+"/textdata.txt",ios::in);
 	if(!newfile.is_open())
 		{qDebug()<<"File not found\n";}
 	while(getline(newfile,temp) && newfile.is_open())
@@ -73,7 +71,7 @@ void About::setOutput(string query_tag)
 	if(output=="")
 		{qDebug()<<"No such tag found";}
 	else
-		{ui->text->setText(Qstring(output.c_str()));}
+		{ui->text->setText(QString(output.c_str()));}
 }
 
 About::~About()

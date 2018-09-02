@@ -35,6 +35,9 @@
 #include <QApplication>
 #include <iostream>
 using namespace std;
+
+string file_path = ros::package::getPath("chess_bot")+"/files";
+
 int main(int argc, char *argv[])
 {		
     ros::init(argc, argv, "chess_ui");

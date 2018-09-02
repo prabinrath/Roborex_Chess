@@ -36,7 +36,9 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include <QProcess>
+#include <QDebug>
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include "Menu.h"
@@ -46,6 +48,7 @@
 #include "About.h"
 #include "ui_MainUI.h"
 #include "chess_bot/feature.h"
+using namespace std;
 
 namespace Ui {
 class MainUI;
@@ -61,7 +64,8 @@ public:
     void setUI(const chess_bot::feature::ConstPtr& msg);
     void tabControl(const std_msgs::Int32::ConstPtr& msg);
     ~MainUI();
-    
+private slots:
+	void on_TabHandle_tabCloseRequested(int index);
 private:
     Ui::MainUI *ui;
     QProcess *boardUI=NULL; //to launch BoardUI
@@ -69,7 +73,7 @@ private:
     ros::NodeHandle nh; 
     chess_bot::feature fetmsg; //for interactions with chess_ai
     ros::Publisher feature_command; //to publish the quit event
-    ros::Suscriber set,menu_command; //to connect Menu with main UI
+    ros::Subscriber set,menu_command; //to connect Menu with main UI
     int menu_flg,newgame_flg,loadgame_flg,record_flg,inst_flg,credit_flg; //flags to prevent ambiguity of multiple UI instances 
 };
 

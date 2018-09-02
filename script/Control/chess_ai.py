@@ -60,7 +60,7 @@ setupUI=False #flag to setup InteractUI and BoardUI or scroll area in LoadGame
 setupUI_flg=False #False to setup InteractUI and BoardUI and True to setup scroll area in LoadGame
 
 ################################### Helping Functions for PGN Handling and crash management
-def logger(game,string):
+def logger(game,string): #logger function: here the game variable is local
 	global file_path
 	log=open(file_path+"/log.txt","a")
 	log.write(game.headers["Event"]+','+game.headers["White"]+','+game.headers["Black"]+','+game.headers["Round"]+','+time.ctime()+','+string+'\n')
@@ -72,8 +72,32 @@ def kyle():
     	ll=current_time.split()
     	return ll[-1]+':'+parser[ll[1]]+':'+ll[2]
 
+def ui_list_initializer(game): #ui_list_initializer function: here the game variable is local
+	global file_path
+	new_text = open(file_path+"/uci_list.txt","w")
+	if(game.headers["Black"]=="Stockfish"):
+		tagA="0 ";tagB="1 ";
+		new_text.write( game.headers["White"]+'\n' )
+	else:
+		tagA="1 ";tagB="0 ";
+		new_text.write( game.headers["Black"]+'\n' )
+	length=len(game.root().variations);
+	if length>0:
+		node = game.root().variations[0];
+	node_ = game.end();
+	if length>0:
+		while(node.move.uci()!=node_.move.uci()):
+			try:
+				new_text.write( tagA+node.move.uci()+"\n" )
+				node = node.variations[0]
+				new_text.write( tagB+node.move.uci()+"\n" )
+				node = node.variations[0]
+			except:
+				pass
+	new_text.close()
+
 def nth_retrival(event,round_,white,black): #load_game function
-    global game,brd,turn,file_path,setupUI,setupUI_flg
+    global game,brd,turn,file_path,setupUI,setupUI_flg,setBoardFlag
     new_pgn=open(file_path+"/gamedata.pgn")
     i=0
     for i,headers in chess.pgn.scan_headers(new_pgn):
@@ -90,12 +114,14 @@ def nth_retrival(event,round_,white,black): #load_game function
                 brd.push(move)
     ui_list_initializer(game)
     setupUI_flg=False
-	setupUI=True
-    logger(game,"retrived")
+    setupUI=True
     turn=False
+    time.sleep(2);
+    setBoardFlag=True
+    logger(game,"Retrived")
 
 def nth_deletion(event,round_,white,black): #delete_game function: here the game variable is local and is used for deletion action
-	global file_path,setupUI,setupUI_flg
+    global file_path,setupUI,setupUI_flg
     new=open(file_path+"/gamedata.pgn")
     i=0
     game_data=open(file_path+"/tempo.pgn","w")
@@ -116,24 +142,7 @@ def nth_deletion(event,round_,white,black): #delete_game function: here the game
     os.rename(file_path+"/tempo.pgn",file_path+"/gamedata.pgn")
     setupUI_flg=True
     setupUI=True
-
-def ui_list_initializer(game):
-	global file_path
-	new_text = open(file_path+"/uci_list.txt","w")
-	if(game.headers["Black"]=="Stockfish"):
-		tagA="0 ";tagB="1 ";
-	else:
-		tagA="1 ";tagB="0 ";
-	node = game.root().variations[0];node_ = game.end();
-	while(node.move.uci()!=node_.move.uci()):
-		try:
-			new_text.write( tagA+node.move.uci()+"\n" )
-			node = node.variations[0]
-			new_text.write( tagB+node.move.uci()+"\n" )
-			node = node.variations[0]
-		except:
-			pass
-	new_text.close()
+    logger(game,"Deleted")
 
 def new_game(event,round_,white,black):
 	global game,brd,turn,master,setupUI,setupUI_flg
@@ -144,6 +153,7 @@ def new_game(event,round_,white,black):
 	game.headers["Black"]=black
 	game.headers["Round"]=round_
 	game.headers["Date" ] =kyle()
+	ui_list_initializer(game)
 	setupUI_flg=False
 	setupUI=True
 	time.sleep(2);
@@ -152,8 +162,8 @@ def new_game(event,round_,white,black):
 		master=True
 	logger(game,"New game")
 
-def restart_game():
-	global game,brd,setBoardFlag
+def restart_game(choice):
+	global game,brd,setBoardFlag,master,turn
 	temp=chess.pgn.Game()
 	temp.headers['Event']=game.headers['Event']
 	temp.headers['White']=game.headers['White']
@@ -163,7 +173,10 @@ def restart_game():
 	game=temp
 	brd=game.board()
 	setBoardFlag=True
-	logger(game,'restart')
+	if choice!='y':
+		turn=True
+		master=True
+	logger(game,'Restart')
 
 def save_game():
 	global game,file_path
@@ -179,7 +192,7 @@ def save_game():
 	exporter = chess.pgn.FileExporter(pgn_)
 	game.accept(exporter)
 	pgn_.close()
-	logger(game,'save')
+	logger(game,'Save')
 
 def undo_move():
 	global game,brd,node,setBoardFlag
@@ -191,7 +204,7 @@ def undo_move():
 		del node
 		node=game.end()
 		setBoardFlag=True
-		logger(game,'undo')
+		logger(game,'Undo')
 	else:
 		print('Nothing To Undo!')
 
@@ -203,13 +216,14 @@ def backup_game(move):
 	exporter = chess.pgn.FileExporter(pgn)
 	game.accept(exporter)
 	pgn.close()
+	#logger(game,"Backup")
 
 def quit_game():
-	global eng,quit_flag,file_path
+	global game,eng,quit_flag,file_path
 	if os.path.exists(file_path+"/temp.pgn"):
 		os.remove(file_path+"/temp.pgn")
 	eng.quit()
-	logger(game,'quit')
+	logger(game,'Quit')
 	quit_flag=True
 ################################################################################
 
@@ -258,8 +272,8 @@ def diff(s):
     return reil
 
 #arduino steps generation
-dict1={'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7};
 def arduino_steps(string,flag):
+        global dict1
         ret_string=""
         irow_8=8-int(string[1])
         icol_8=dict1[string[0]]
@@ -392,12 +406,8 @@ def decode(mv):
 		master=True
 
 def uicall(uidat):
-	global turn,respn,illigal,master,rwait
-	if uidat.type==0:
-		if uidat.sys!="yes":
-			turn=True
-			master=True
-	elif uidat.type==1:
+	global respn,illigal,rwait
+	if uidat.type==1:
 		rwait=False
 	elif uidat.type==2:
 		respn=uidat.sys
@@ -405,21 +415,21 @@ def uicall(uidat):
 		illigal=False
 		
 def interact(income):
-	if income.head!='':
-		data=income.head.split(' ')
+	if len(income.head)>1:
+		data=income.head.split(',')
 		if income.flag==1:
-			new_game(head[0],head[1],head[2],head[3])
+			new_game(data[0],data[1],data[2],data[3])
 		elif income.flag==2:
-			nth_retrival(head[0],head[1],head[2],head[3])
+			nth_retrival(data[0],data[1],data[2],data[3])
 		elif income.flag==3:
-			nth_deletion(head[0],head[1],head[2],head[3])
+			nth_deletion(data[0],data[1],data[2],data[3])
 	else:
 		if income.flag==1:
 			save_game()
 		elif income.flag==2:
 			undo_move()
 		elif income.flag==3:
-			restart_game()
+			restart_game(income.head)
 		elif income.flag==4:
 			quit_game()
 		elif income.flag==5:
@@ -466,14 +476,14 @@ def main_():
 			ui_setup_msg.head=""
 			if setupUI_flg==False:
 				ui_setup_msg.flag=1
-			else
+			else:
 				ui_setup_msg.flag=2
 			uiset.publish(ui_setup_msg)
 			setupUI=False
 		if master==True:
 			flagpub.publish(turn)
 			if turn==False: #user turn
-                print('user turn')
+				print('user turn')
 				print(indata)
 				if value==5: #for respawn move
 					temp.type=2
@@ -519,8 +529,8 @@ def main_():
 				move_flag=checking_(bst)
 				brd.push(bst)
 				outdata=bst.uci()
-                print(outdata)
-                backup_game(outdata)
+				print(outdata)
+				backup_game(outdata)
 				temp.type=4
 				temp.mo=outdata
 				uipub.publish(temp)

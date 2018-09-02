@@ -41,8 +41,8 @@ MainUI::MainUI(ros::NodeHandle _nh, QWidget *parent) :
 	feature_command = nh.advertise<chess_bot::feature>("interactions", 1000);
 	set = nh.subscribe("ui_setup", 1, &MainUI::setUI, this);
 	menu_command = nh.subscribe("menu_data", 1, &MainUI::tabControl, this);
-	ui->tab->removeTab(1);ui->tab->removeTab(0);
-    ui->tab->addTab(new Menu(nh,this),"Menu");menu_flg=0;
+	ui->TabHandle->removeTab(1);ui->TabHandle->removeTab(0);
+    ui->TabHandle->addTab(new Menu(nh,this),"Menu");menu_flg=0;
     newgame_flg=-1;loadgame_flg=-1;record_flg=-1;inst_flg=-1;credit_flg=-1;
 }
 
@@ -52,16 +52,16 @@ void MainUI::tabControl(const std_msgs::Int32::ConstPtr& msg)
 	{
 		interactUI=NULL;
 		if(newgame_flg!=-1)
-			ui->tab->removeTab(newgame_flg);
+			{ui->TabHandle->removeTab(newgame_flg);newgame_flg=-1;}
 		if(loadgame_flg!=-1)
-			ui->tab->removeTab(loadgame_flg);
+			{ui->TabHandle->removeTab(loadgame_flg);loadgame_flg=-1;}
 	}
 	else if(msg->data==1)
 	{
 		if(interactUI==NULL)
 		{
 			if(newgame_flg==-1 && loadgame_flg==-1)
-				{ui->tab->addTab(new NewGame(nh,this),"New Game");newgame_flg=ui->TabHandle->count()-1;}
+				{ui->TabHandle->addTab(new NewGame(nh,this),"New Game");newgame_flg=ui->TabHandle->count()-1;}
 			else
 				QMessageBox::information( this, tr("Information"), tr("Either New game tab or Saved Game List tab is already open") );
 		}
@@ -79,7 +79,7 @@ void MainUI::tabControl(const std_msgs::Int32::ConstPtr& msg)
 		if(interactUI==NULL)
 		{
 			if(newgame_flg==-1 && loadgame_flg==-1)
-				{ui->tab->addTab(new LoadDelete(nh,this),"Saved Game List");loadgame_flg=ui->TabHandle->count()-1;}
+				{ui->TabHandle->addTab(new LoadDelete(nh,this),"Saved Game List");loadgame_flg=ui->TabHandle->count()-1;}
 			else
 				QMessageBox::information( this, tr("Information"), tr("Either New game tab or Saved Game List tab is already open") );
 		}
@@ -95,26 +95,26 @@ void MainUI::tabControl(const std_msgs::Int32::ConstPtr& msg)
 	else if(msg->data==3)
 	{
 		if(record_flg==-1)
-			{ui->tab->addTab(new About("record",this),"Saved Game List");record_flg=ui->TabHandle->count()-1;}
+			{ui->TabHandle->addTab(new About("record",this),"Game Record");record_flg=ui->TabHandle->count()-1;}
 		ui->TabHandle->setCurrentIndex(record_flg);
 	}
 	else if(msg->data==4)
 	{
 		if(inst_flg==-1)
-			{ui->tab->addTab(new About("instruction",this),"Instruction");inst_flg=ui->TabHandle->count()-1;}
+			{ui->TabHandle->addTab(new About("instruction",this),"Instructions");inst_flg=ui->TabHandle->count()-1;}
 		ui->TabHandle->setCurrentIndex(inst_flg);
 	}
 	else if(msg->data==5)
 	{
 		if(credit_flg==-1)
-			{ui->tab->addTab(new About("credit",this),"Saved Game List");credit_flg=ui->TabHandle->count()-1;}
+			{ui->TabHandle->addTab(new About("credit",this),"Credits");credit_flg=ui->TabHandle->count()-1;}
 		ui->TabHandle->setCurrentIndex(credit_flg);
 	}
 }
 
 void MainUI::setUI(const chess_bot::feature::ConstPtr& msg)
 {
-	if(msg.flag==1)
+	if(msg->flag==1)
 	{
 		boardUI=new QProcess();
     	boardUI->start(QString("rosrun chess_ui_fen chess_ui_fen"));
@@ -123,11 +123,11 @@ void MainUI::setUI(const chess_bot::feature::ConstPtr& msg)
 	}
 }
 
-void MainUI::on_tab_tabCloseRequested(int index)
+void MainUI::on_TabHandle_tabCloseRequested(int index)
 {
    if(index!=0)
    {
-   		ui->tab->removeTab(index);
+   		ui->TabHandle->removeTab(index);
    		if(index==newgame_flg)
    			newgame_flg=-1;
    		else if(index==loadgame_flg)
@@ -141,7 +141,7 @@ void MainUI::on_tab_tabCloseRequested(int index)
    }
 }
 
-void MainUI::closeEvent(QCloseEvent *event)
+void MainUI::closeEvent(QCloseEvent *evt)
 {
 		QMessageBox::StandardButton replyA=QMessageBox::question(this,tr("Confirm Exit"),tr("Thanks for playing\nDo you want to Quit?"),QMessageBox::Yes|QMessageBox::No);
 		if(replyA==QMessageBox::Yes)
@@ -154,10 +154,11 @@ void MainUI::closeEvent(QCloseEvent *event)
 					fetmsg.flag=5;
 			}
 			feature_command.publish(fetmsg);
-			event->accept();
+			evt->accept();
 		}
+		else
+			evt->ignore();
 }
-
 
 MainUI::~MainUI()
 {

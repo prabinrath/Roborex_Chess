@@ -14,6 +14,8 @@ cv_bridge
 image_transport
 )
 
+find_package(OpenCV REQUIRED)
+
 ## Declare ROS messages and services
 add_message_files(FILES botdata.msg ui_data.msg feature.msg)
 
@@ -49,10 +51,7 @@ QT4_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
 ## Build ##
 ###########
 include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-	${QT_INCLUDE_DIRS}
-)
+include_directories(${catkin_INCLUDE_DIRS} ${QT_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 add_library(chess_bot_ui ${QT_SOURCES} ${QT_FORMS_HPP} ${QT_MOC_HPP})
 target_link_libraries(chess_bot_ui ${QT_LIBRARIES} ${catkin_LIBRARIES})

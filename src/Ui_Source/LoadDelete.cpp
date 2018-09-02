@@ -32,15 +32,14 @@
 
 
 #include "Ui_Moc/LoadDelete.h"
-
-string file_path = ros::package::getPath("chess_bot")+"/files";
+extern string file_path;
 
 LoadDelete::LoadDelete(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LoadDelete), nh(_nh)
 {
 	ui->setupUi(this);
-	sub = nh.subscribe("ui_setup", 1, &MyDialog::setScrollArea, this);
+	sub = nh.subscribe("ui_setup", 1, &LoadDelete::setScrollArea, this);
 	loadTiles();
 }
 
@@ -113,7 +112,7 @@ void LoadDelete::loadTiles()
 
 void LoadDelete::setScrollArea(const chess_bot::feature::ConstPtr& msg)
 {
-	if(msg.flag==2)
+	if(msg->flag==2)
 	{
 		loadTiles();
 	}

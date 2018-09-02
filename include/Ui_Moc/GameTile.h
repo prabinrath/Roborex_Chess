@@ -40,6 +40,7 @@
 #include <vector>
 #include "ui_GameTile.h"
 #include "chess_bot/feature.h"
+using namespace std;
 
 namespace Ui {
 class GameTile;

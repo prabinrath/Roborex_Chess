@@ -32,8 +32,7 @@
 
 
 #include "Ui_Moc/NewGame.h"
-
-string file_path = ros::package::getPath("chess_bot")+"/files";
+extern string file_path;
 
 NewGame::NewGame(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
@@ -104,7 +103,7 @@ void NewGame::on_confirm_clicked()
 	   		header+=ui->name->toPlainText()+",Stockfish";
 	   else
 	   		header+="Stockfish,"+ui->name->toPlainText();
-
+	   //qDebug()<<header;
 	   if(checkPresence(header.toStdString())==true)
 	   	{
 	   		QMessageBox::StandardButton reply=QMessageBox::question(this,tr("Concurrency Found"), tr("Incomplete game with similar parameters is already present in the Saved Game List, Would you like to delete that game and start a new one?") ,QMessageBox::Yes|QMessageBox::No);
