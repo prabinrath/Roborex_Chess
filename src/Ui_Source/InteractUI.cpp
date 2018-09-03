@@ -72,12 +72,16 @@ void InteractUI::on_save_clicked()
 
 void InteractUI::on_undo_clicked()
 {
-	chess_bot::feature msg;
-	msg.head="";
-	msg.flag=2;
-	interact.publish(msg);
-	ui->move->removeRow(mv_cnt--);
-	ui->move->removeRow(mv_cnt--);
+	if(mv_cnt>2)
+	{
+		chess_bot::feature msg;
+		msg.head="";
+		msg.flag=2;
+		interact.publish(msg);
+		ui->move->removeRow(--mv_cnt);
+		ui->move->removeRow(--mv_cnt);
+		save_flag=false;
+	}
 }
 
 void InteractUI::on_rst_clicked()
@@ -91,13 +95,59 @@ void InteractUI::on_rst_clicked()
 	}
 	msg.flag=3;
 	interact.publish(msg);
-	for(int i=0;i<mv_cnt;i++)
-		ui->move->removeRow(mv_cnt--);
+	while(mv_cnt>0)
+		ui->move->removeRow(--mv_cnt);		
 }
 
 void InteractUI::setflag(const std_msgs::Bool::ConstPtr& msg)
 {
 	master=msg->data;
+}
+
+void InteractUI::insertRecord(string data)
+{
+	ifstream rfile; 
+   	ofstream wfile;
+   	wfile.open(file_path+"/temp.txt");
+   	rfile.open(file_path+"/textdata.txt"); 
+   	if(rfile.is_open() && wfile.is_open())
+	{
+		qDebug()<<"Files opened\n";
+	}
+	else
+	{
+		qDebug()<<"Couldn't open the files\n";
+	}
+ 
+    string line="";
+	while (getline(rfile, line) && rfile.is_open() && wfile.is_open())
+	{
+	    wfile<<line<<endl;
+	    if(line=="#record")
+	    {
+		getline(rfile, line);
+		if(line=="NO RECORDS FOUND")
+		    wfile<<data<<endl;
+		else
+		{
+			wfile<<line<<endl;
+			while(getline(rfile, line))
+			{
+				if(line != "#")
+				   wfile<<line<<endl;
+			}
+			wfile<<data<<endl;
+			wfile<<"#"<<endl;
+		}
+	    }
+	}
+   	rfile.close();
+   	wfile.close();
+   	if(line != "")
+	{
+		remove((file_path+"/textdata.txt").c_str());
+		rename((file_path+"/temp.txt").c_str() , (file_path+"/textdata.txt").c_str());
+	}
 }
 
 void InteractUI::ui_callback(const chess_bot::ui_data::ConstPtr& msg)
@@ -106,7 +156,16 @@ void InteractUI::ui_callback(const chess_bot::ui_data::ConstPtr& msg)
 	if(swh!=4)
 	{
 		//ui->sys_out->setText(QString(msg->sys.c_str()));
-		QMessageBox::information( this, tr("System Says..."), QString(msg->sys.c_str()));
+		QString ui_msg=QString(msg->sys.c_str());
+		if(ui_msg.contains(QString("draw")))
+		{
+			insertRecord((QString(user_name.c_str())+QString(" draw ")+QString::number(mv_cnt-1)).toStdString());
+		}
+		if(ui_msg.contains(QString("congratulations")))
+		{
+			insertRecord((QString(user_name.c_str())+QString(" congratulations ")+QString::number(mv_cnt-1)).toStdString());
+		}
+		QMessageBox::information( this, tr("System Says..."), ui_msg);
 	}
 	else
 	{
@@ -140,7 +199,7 @@ void InteractUI::setUI()
 	}
 	else
 	{
-		qDebug()<<"Couldnt open the file\n";
+		qDebug()<<"Couldn't open the file\n";
 	}
 	string line,mov="";
 	while(getline(lst,line) && lst.is_open()) //extract lines one by one

@@ -37,6 +37,7 @@
 using namespace std;
 
 string file_path = ros::package::getPath("chess_bot")+"/files";
+bool active=false;
 
 int main(int argc, char *argv[])
 {		

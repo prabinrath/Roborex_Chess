@@ -32,6 +32,7 @@
 
 
 #include "Ui_Moc/GameTile.h"
+extern bool active;
 
 GameTile::GameTile(string hd,ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
@@ -61,10 +62,16 @@ GameTile::GameTile(string hd,ros::NodeHandle _nh, QWidget *parent) :
 
 void GameTile::on_play_clicked()
 {
-	chess_bot::feature fetmsg;
-	fetmsg.head=header_data;
-	fetmsg.flag=2;
-	pub.publish(fetmsg);
+	if(!active)
+	{
+		chess_bot::feature fetmsg;
+		fetmsg.head=header_data;
+		fetmsg.flag=2;
+		pub.publish(fetmsg);
+		active=true;
+	}
+	else
+		QMessageBox::information( this, tr("Information"), tr("One game is already running") );
 }
 
 void GameTile::on_del_clicked()

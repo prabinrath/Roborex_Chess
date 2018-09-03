@@ -36,6 +36,7 @@
 
 #include <QMainWindow>
 #include <ros/ros.h>
+#include <QMessageBox>
 #include <string>
 #include <vector>
 #include "ui_GameTile.h"

@@ -33,6 +33,7 @@
 
 #include "Ui_Moc/NewGame.h"
 extern string file_path;
+extern bool active;
 
 NewGame::NewGame(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
@@ -95,7 +96,7 @@ bool NewGame::checkPresence(string head)
 
 void NewGame::on_confirm_clicked()
 {
-   if(ui->event->toPlainText()!="" && ui->name->toPlainText()!="" && ui->round->toPlainText()!="")
+   if(ui->event->toPlainText()!="" && ui->name->toPlainText()!="" && ui->round->toPlainText()!="" && !active)
    {
 	   QString header;
 	   header+=ui->event->toPlainText()+","+ui->round->toPlainText()+",";
@@ -124,10 +125,16 @@ void NewGame::on_confirm_clicked()
 			pub.publish(fetmsg);
 			this->hide();
 	   	}
+	   	active=true;
 	}
 	else
 	{
-		QMessageBox::information( this, tr("Information"), tr("None of the fields can be left blank") );
+		if(active==true)
+		{
+			QMessageBox::information( this, tr("Information"), tr("One game is already running") );
+		}
+		else
+			QMessageBox::information( this, tr("Information"), tr("None of the fields can be left blank") );
 	}		
 }
 

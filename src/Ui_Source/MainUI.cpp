@@ -32,6 +32,7 @@
 
 
 #include "Ui_Moc/MainUI.h"
+extern bool active;
 
 MainUI::MainUI(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
@@ -55,6 +56,8 @@ void MainUI::tabControl(const std_msgs::Int32::ConstPtr& msg)
 			{ui->TabHandle->removeTab(newgame_flg);newgame_flg=-1;}
 		if(loadgame_flg!=-1)
 			{ui->TabHandle->removeTab(loadgame_flg);loadgame_flg=-1;}
+		boardUI->close();
+		active=false;
 	}
 	else if(msg->data==1)
 	{

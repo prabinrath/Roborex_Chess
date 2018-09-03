@@ -116,11 +116,11 @@ def nth_retrival(event,round_,white,black): #load_game function
     setupUI_flg=False
     setupUI=True
     turn=False
-    time.sleep(2);
+    time.sleep(1);
     setBoardFlag=True
     logger(game,"Retrived")
 
-def nth_deletion(event,round_,white,black): #delete_game function: here the game variable is local and is used for deletion action
+def nth_deletion(event,round_,white,black): #delete_game function: here the game_ variable is local and is used for deletion action
     global file_path,setupUI,setupUI_flg
     new=open(file_path+"/gamedata.pgn")
     i=0
@@ -129,20 +129,20 @@ def nth_deletion(event,round_,white,black): #delete_game function: here the game
         if(headers["Event"]==event) and (headers["White"]==white) and (headers["Black"]==black) and (headers["Round"]==round_):
             continue
         else:
-            game=chess.pgn.read_game(new)
-            game.headers["Event"]=headers["Event"]
-            game.headers["White"]=headers["White"]
-            game.headers["Black"]=headers["Black"]
-            game.headers["Round"]=headers["Round"]
-            game.headers["Date"]=headers["Date"]
+            game_=chess.pgn.read_game(new)
+            game_.headers["Event"]=headers["Event"]
+            game_.headers["White"]=headers["White"]
+            game_.headers["Black"]=headers["Black"]
+            game_.headers["Round"]=headers["Round"]
+            game_.headers["Date"]=headers["Date"]
             exporter=chess.pgn.FileExporter(game_data)
-            game.accept(exporter)
+            game_.accept(exporter)
     game_data.close()
     os.remove(file_path+"/gamedata.pgn")
     os.rename(file_path+"/tempo.pgn",file_path+"/gamedata.pgn")
     setupUI_flg=True
     setupUI=True
-    logger(game,"Deleted")
+    logger(game_,"Deleted")
 
 def new_game(event,round_,white,black):
 	global game,brd,turn,master,setupUI,setupUI_flg
@@ -156,7 +156,7 @@ def new_game(event,round_,white,black):
 	ui_list_initializer(game)
 	setupUI_flg=False
 	setupUI=True
-	time.sleep(2);
+	time.sleep(1);
 	if white=="Stockfish":
 		turn=True
 		master=True
@@ -185,7 +185,7 @@ def save_game():
 		for i,headers in chess.pgn.scan_headers(pgn_):
 			if(headers["Event"]==game.headers["Event"]) and (headers["White"]==game.headers["White"]) and (headers["Black"]==game.headers["Black"]) and (headers["Round"]==game.headers["Round"]):
 				pgn_.close()
-				nth_deletion(game.headers["Event"],game.headers["White"],game.headers["Black"],game.headers["Round"])
+				nth_deletion(game.headers["Event"],game.headers["Round"],game.headers["White"],game.headers["Black"])
 				break
 		pgn_.close()
 	pgn_=open(file_path+"/gamedata.pgn","a")
@@ -197,6 +197,7 @@ def save_game():
 def undo_move():
 	global game,brd,node,setBoardFlag
 	if len(game.variations)==1:
+		node=game.end()
 		node.parent.remove_variation(brd.pop())
 		del node
 		node=game.end()
@@ -464,7 +465,7 @@ def main_():
 		'''
 		if ' b ' in brd.fen():
 		''' 
-		
+	#print(setupUI);
 	temp=ui_data()
 	ui_setup_msg=feature()
 	

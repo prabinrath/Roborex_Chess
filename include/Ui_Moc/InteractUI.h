@@ -66,6 +66,7 @@ public:
     void setUI();
     void closeEvent(QCloseEvent *event);
     void setflag(const std_msgs::Bool::ConstPtr& msg);
+    void insertRecord(string data);
     void ui_callback(const chess_bot::ui_data::ConstPtr& msg);
 private slots:
 	void on_send_clicked();
