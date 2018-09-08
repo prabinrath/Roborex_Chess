@@ -37,12 +37,13 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <algorithm>
-#define position_offset 45
+#define position_offset 42
 
 using namespace cv;
 using namespace std;
 
-int iLowH = 22;int iHighH = 46;int iLowS = 38;int iHighS = 192;int iLowV = 131;int iHighV = 255;
+int iLowH = 22;int iHighH = 46;int iLowS = 38;int iHighS = 192;int iLowV = 131;int iHighV = 255; //for piece detection
+int hLowH = 0;int hHighH = 45;int hLowS = 135;int hHighS = 255;int hLowV = 131;int hHighV = 255; //for hand detection
 int x = 108;int y = 23;int width = 392;int height = 386;
 Mat thresh, frame, gray, blr, cannyed, hsv, hand; //image variables declaration
 char sen[74]; //to store the output binary string
@@ -105,7 +106,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 
 	//hand detection
 	int count=0; //counter for hand detection
-	inRange(hsv, Scalar(57, 127, 17), Scalar(179, 255, 255), hand);
+	inRange(hsv, Scalar(hLowH, hLowS, hLowV), Scalar(hHighH, hHighS, hHighV), hand);
   	//morphological opening (remove small objects from the foreground)
 		erode(hand, hand, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
 		dilate( hand, hand, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
@@ -220,14 +221,23 @@ int main(int argc, char **argv)
     namedWindow("Control", CV_WINDOW_NORMAL);
 
     //dynamic color detection
-    cvCreateTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
-    cvCreateTrackbar("HighH", "Control", &iHighH, 179);
+    cvCreateTrackbar("dot LowH", "Control", &iLowH, 179); //Hue (0 - 179)
+    cvCreateTrackbar("dot HighH", "Control", &iHighH, 179);
 
-    cvCreateTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
-    cvCreateTrackbar("HighS", "Control", &iHighS, 255);
+    cvCreateTrackbar("dot LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
+    cvCreateTrackbar("dot HighS", "Control", &iHighS, 255);
 
-    cvCreateTrackbar("LowV", "Control", &iLowV, 255); //Value (0 - 255)
-    cvCreateTrackbar("HighV", "Control", &iHighV, 255);
+    cvCreateTrackbar("dot LowV", "Control", &iLowV, 255); //Value (0 - 255)
+    cvCreateTrackbar("dot HighV", "Control", &iHighV, 255);
+	
+	cvCreateTrackbar("hand LowH", "Control", &hLowH, 179); //Hue (0 - 179)
+    cvCreateTrackbar("hand HighH", "Control", &hHighH, 179);
+
+    cvCreateTrackbar("hand LowS", "Control", &hLowS, 255); //Saturation (0 - 255)
+    cvCreateTrackbar("hand HighS", "Control", &hHighS, 255);
+
+    cvCreateTrackbar("hand LowV", "Control", &hLowV, 255); //Value (0 - 255)
+    cvCreateTrackbar("hand HighV", "Control", &hHighV, 255);
 
     //dynamic crop
     cvCreateTrackbar("x", "Control", &x, 640);

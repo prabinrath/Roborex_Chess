@@ -1,21 +1,102 @@
-[Event "Hello"]
-[Site "?"]
-[Date "2018:09:3"]
-[Round "3"]
-[White "Stockfish"]
-[Black "Jha"]
-[Result "*"]
-
-1. Nf3 e5 *
-
 [Event "hello"]
 [Site "?"]
 [Date "????.??.??"]
 [Round "1"]
-[White "Stockfish"]
-[Black "tyu"]
+[White "wer"]
+[Black "Stockfish"]
 [Result "*"]
 
 1. e4 e5 2. c4 Bc5 3. Qg4 Nf6 4. d4 Bb4+ 5. Nd2 Nxg4 6. h4 Nc6 7. Nf3 Qf6 8.
-Be2 Nxd4 *
+Be2 Nxd4 9. O-O Nxe2+ 10. Kh1 Bc5 11. Re1 Nxf2+ 12. Kh2 Qf4+ 13. g3 Qxg3# *
+
+[Event "test"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "1"]
+[White "Stockfish"]
+[Black "jkl"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 h5 3. Bc4 Nc6 *
+
+[Event "qwert"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "1"]
+[White "neelam"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 Nc6 4. Qe2 d6 5. d4 exd4 6. Na4 a6 7. Qd2 Nxe4 8.
+Qd3 Qe7 *
+
+[Event "ghui"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "2"]
+[White "huma"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. c4 e5 2. a4 Nf6 3. a5 Bb4 4. h4 O-O 5. Qc2 Nc6 6. Nf3 d6 *
+
+[Event "ghui"]
+[Site "?"]
+[Date "2018:03:19"]
+[Round "3"]
+[White "Stockfish"]
+[Black "jitu"]
+[Result "*"]
+
+1. e4 h5 2. Nf3 *
+
+[Event "ghui"]
+[Site "?"]
+[Date "2018:03:19"]
+[Round "4"]
+[White "huma"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. e4 e5 *
+
+[Event "qwert"]
+[Site "?"]
+[Date "2018:03:19"]
+[Round "2"]
+[White "Stockfish"]
+[Black "prabin"]
+[Result "*"]
+
+1. e4 e5 2. a4 Nf6 3. Ra3 Bxa3 4. bxa3 Nxe4 5. Qe2 d5 6. d3 Nc5 *
+
+[Event "Inno"]
+[Site "?"]
+[Date "2018:04:15"]
+[Round "1"]
+[White "Maneesh"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. e4 e5 2. h4 Nf6 3. b4 Bxb4 *
+
+[Event "Test3"]
+[Site "?"]
+[Date "2018:09:8"]
+[Round "1"]
+[White "Stockfish"]
+[Black "Prabin"]
+[Result "*"]
+
+1. d4 Nc6 2. d5 Ne5 3. Nc3 d6 4. e4 *
+
+[Event "Test3"]
+[Site "?"]
+[Date "2018:09:8"]
+[Round "2"]
+[White "Prabin"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. d4 d5 2. a4 Bf5 *
 

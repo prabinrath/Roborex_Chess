@@ -40,7 +40,6 @@
 #include <QFrame>
 #include <QDebug>
 #include <ros/ros.h>
-#include <ros/package.h>
 #include <fstream>
 #include <string>
 #include "GameTile.h"

@@ -116,7 +116,6 @@ def nth_retrival(event,round_,white,black): #load_game function
     setupUI_flg=False
     setupUI=True
     turn=False
-    time.sleep(1);
     setBoardFlag=True
     logger(game,"Retrived")
 
@@ -156,7 +155,6 @@ def new_game(event,round_,white,black):
 	ui_list_initializer(game)
 	setupUI_flg=False
 	setupUI=True
-	time.sleep(1);
 	if white=="Stockfish":
 		turn=True
 		master=True
@@ -166,8 +164,20 @@ def restart_game(choice):
 	global game,brd,setBoardFlag,master,turn
 	temp=chess.pgn.Game()
 	temp.headers['Event']=game.headers['Event']
-	temp.headers['White']=game.headers['White']
-	temp.headers['Black']=game.headers['Black']
+	if choice=='y':
+		if game.headers['White']=='Stockfish':
+			temp.headers['White']=game.headers['Black']
+			temp.headers['Black']=game.headers['White']
+		else:
+			temp.headers['White']=game.headers['White']
+			temp.headers['Black']=game.headers['Black']
+	else:
+		if game.headers['Black']=='Stockfish':
+			temp.headers['White']=game.headers['Black']
+			temp.headers['Black']=game.headers['White']
+		else:
+			temp.headers['White']=game.headers['White']
+			temp.headers['Black']=game.headers['Black']
 	temp.headers['Round']=str(int(game.headers['Round'])+1)
 	temp.headers['Date']=kyle()
 	game=temp
@@ -218,6 +228,24 @@ def backup_game(move):
 	game.accept(exporter)
 	pgn.close()
 	#logger(game,"Backup")
+
+def manage_crash():
+	global file_path,game,node,brd,setupUI,setupUI_flg,setBoardFlag
+	if os.path.exists(file_path+"/temp.pgn"): #TODO:add turn setup after recovery
+		print("Previous game crashed\n")
+		new_pgn=open(file_path+"/temp.pgn")
+		game=chess.pgn.read_game(new_pgn)
+		node=game.end()
+		brd=game.board()
+		for move in game.main_line():
+			brd.push(move)
+		ui_list_initializer(game)
+		setupUI_flg=False
+		setupUI=True
+		logger(game,"Crashed Game")
+		'''
+		if ' b ' in brd.fen():
+		''' 
 
 def quit_game():
 	global game,eng,quit_flag,file_path
@@ -450,36 +478,29 @@ def main_():
 	rospy.Subscriber('ui_recv', ui_data, uicall)
 	rospy.Subscriber('interactions', feature, interact)
 	
-	if os.path.exists(file_path+"/temp.pgn"): #TODO:add turn setup after recovery
-		print("Previous game crashed\n")
-		new_pgn=open(file_path+"/temp.pgn")
-		game=chess.pgn.read_game(new_pgn)
-		node=game.end()
-		brd=game.board()
-		for move in game.main_line():
-			brd.push(move)
-		ui_list_initializer(game)
-		setupUI_flg=False
-		setupUI=True
-		logger(game,"Crashed Game")
-		'''
-		if ' b ' in brd.fen():
-		''' 
-	#print(setupUI);
+	time.sleep(1)
+	manage_crash()
+
 	temp=ui_data()
 	ui_setup_msg=feature()
-	
+
 	rate = rospy.Rate(20)
 	while not rospy.is_shutdown():
 		if quit_flag==True:
 			break
 		if setupUI==True:
 			ui_setup_msg.head=""
+			ui_setup_msg.flag=2
 			if setupUI_flg==False:
 				ui_setup_msg.flag=1
-			else:
-				ui_setup_msg.flag=2
+			print "publishing"
 			uiset.publish(ui_setup_msg)
+			print "published"
+			if setupUI_flg==False:
+				print "waiting"
+				time.sleep(1);
+			print "waited"
+			setBoardFlag=True
 			setupUI=False
 		if master==True:
 			flagpub.publish(turn)
@@ -574,6 +595,7 @@ def main_():
 		if turn==False:
 			master=False
 		if setBoardFlag==True:
+			print brd
 			fenpub.publish(brd.fen())
 			setBoardFlag=False
 		

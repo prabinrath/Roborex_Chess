@@ -45,7 +45,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
-#include <ros/package.h>
 #include "ui_InteractUI.h"
 #include "chess_bot/feature.h"
 #include "chess_bot/ui_data.h"

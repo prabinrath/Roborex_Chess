@@ -32,13 +32,14 @@
 
 
 #include "Ui_Moc/Menu.h"
+string image_path = ros::package::getPath("chess_bot");
 
 Menu::Menu(ros::NodeHandle _nh, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Menu), nh(_nh)
 {
 	ui->setupUi(this);
-	logo_pixmap.load("/home/prabin/catkin_ws/src/chess_bot/utils/chess_logo.jpg");
+	logo_pixmap.load((image_path+"/utils/chess_logo.jpg").c_str());
 	ui->logo->setPixmap(logo_pixmap);
 	set_tab = nh.advertise<std_msgs::Int32>("menu_data", 1000);
 }

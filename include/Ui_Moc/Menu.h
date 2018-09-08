@@ -36,7 +36,9 @@
 
 #include <QMainWindow>
 #include <QPixmap>
+#include <string>
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <std_msgs/Int32.h>
 #include "ui_Menu.h"
 using namespace std;

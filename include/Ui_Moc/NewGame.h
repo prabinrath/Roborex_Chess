@@ -38,7 +38,6 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <ros/ros.h>
-#include <ros/package.h>
 #include <fstream>
 #include <string>
 #include "ui_NewGame.h"

@@ -32,6 +32,7 @@
 
 
 #include "Ui_Moc/MainUI.h"
+#include <ros/package.h>
 #include <QApplication>
 #include <iostream>
 using namespace std;

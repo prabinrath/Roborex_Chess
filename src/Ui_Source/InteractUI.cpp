@@ -57,8 +57,8 @@ void InteractUI::on_send_clicked()
 	if(swh==0 || swh==2)
 	{
 		toui.sys=indat.toStdString();
-		aisend.publish(toui);
 	}
+	aisend.publish(toui);
 }
 
 void InteractUI::on_save_clicked()
@@ -176,7 +176,7 @@ void InteractUI::ui_callback(const chess_bot::ui_data::ConstPtr& msg)
 		}
 		else
 		{
-			ui->move->setItem(mv_cnt, 0, new QTableWidgetItem("stockfish"));
+			ui->move->setItem(mv_cnt, 0, new QTableWidgetItem("Stockfish"));
 			ui->move->setItem(mv_cnt, 1, new QTableWidgetItem(QString(msg->mo.c_str())));
 		}
 		mv_cnt++;
@@ -223,15 +223,16 @@ void InteractUI::setUI()
 		else
 		{
 			user_name=line;
+			ui->sys_in->setText(QString("Hello ")+QString((line+" !!!").c_str()));
 		}
 		mov="";
 	}
 	lst.close();
-
+/*
 	if(remove((file_path+"/uci_list.txt").c_str())!=0)
 		qDebug()<<"Couldn't find initializer list\n";
 	else
-		qDebug()<<"Deleted initializer list successfully\n";
+		qDebug()<<"Deleted initializer list successfully\n";*/
 }
 
 void InteractUI::closeEvent(QCloseEvent *evt)

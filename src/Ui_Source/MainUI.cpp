@@ -57,6 +57,7 @@ void MainUI::tabControl(const std_msgs::Int32::ConstPtr& msg)
 		if(loadgame_flg!=-1)
 			{ui->TabHandle->removeTab(loadgame_flg);loadgame_flg=-1;}
 		boardUI->close();
+		boardUI=NULL;
 		active=false;
 	}
 	else if(msg->data==1)
@@ -152,6 +153,10 @@ void MainUI::closeEvent(QCloseEvent *evt)
 			fetmsg.head="";fetmsg.flag=4;
 			if(interactUI!=NULL)
 			{
+				if(boardUI!=NULL)
+				{
+					boardUI->close();
+				}
 				QMessageBox::StandardButton replyB=QMessageBox::question(this,tr("Save"),tr("Do you want to save the current game?"),QMessageBox::Yes|QMessageBox::No);
 				if(replyB==QMessageBox::Yes)
 					fetmsg.flag=5;
