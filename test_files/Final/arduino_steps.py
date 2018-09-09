@@ -109,7 +109,7 @@ def killing_move(frow_16,fcol_16):
                 b=0
         elif (check_kill==3):
                 a=0
-                b=18-fcol_16
+                b=17-fcol_16
         return a,b
 #end arduino steps generation
 
@@ -123,4 +123,3 @@ def main():
         print final_string
 
 main()
-

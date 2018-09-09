@@ -9,3 +9,20 @@ Test3,Prabin,Stockfish,2,Sat Sep  8 08:41:50 2018,Save
 Test3,Stockfish,Prabin,1,Sat Sep  8 08:42:53 2018,Retrived
 Test3,Prabin,Stockfish,2,Sat Sep  8 08:43:14 2018,Retrived
 Test3,Prabin,Stockfish,2,Sat Sep  8 08:45:06 2018,Quit
+Test3,Stockfish,Prabin,1,Sat Sep  8 10:03:30 2018,Retrived
+Test3,Stockfish,Prabin,1,Sat Sep  8 10:04:48 2018,Quit
+Test4,Stockfish,Subham,1,Sun Sep  9 08:41:34 2018,New game
+Test4,Stockfish,Subham,1,Sun Sep  9 08:42:43 2018,Quit
+Test6,Stockfish,dox,1,Sun Sep  9 14:01:41 2018,New game
+Test6,Stockfish,dox,1,Sun Sep  9 14:06:56 2018,Quit
+Test4,Stockfish,Dox,1,Sun Sep  9 14:09:14 2018,New game
+Test4,Stockfish,Dox,1,Sun Sep  9 14:10:33 2018,Quit
+Test4,Neelam,Stockfish,1,Sun Sep  9 14:30:02 2018,New game
+Test4,Neelam,Stockfish,1,Sun Sep  9 14:46:08 2018,Undo
+Test4,Neelam,Stockfish,1,Sun Sep  9 14:46:10 2018,Save
+Test4,Neelam,Stockfish,1,Sun Sep  9 14:49:31 2018,Quit
+Test4,Neelam,Stockfish,1,Sun Sep  9 15:22:25 2018,Retrived
+Test4,Neelam,Stockfish,1,Sun Sep  9 15:25:33 2018,Undo
+Test4,Neelam,Stockfish,1,Sun Sep  9 15:36:55 2018,Undo
+Test4,Neelam,Stockfish,1,Sun Sep  9 16:08:29 2018,Quit
+?,?,?,?,Sun Sep  9 16:12:39 2018,Quit

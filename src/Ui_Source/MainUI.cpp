@@ -39,7 +39,8 @@ MainUI::MainUI(ros::NodeHandle _nh, QWidget *parent) :
     ui(new Ui::MainUI), nh(_nh)
 {
 	ui->setupUi(this);
-	feature_command = nh.advertise<chess_bot::feature>("interactions", 1000);
+	feature_command = nh.advertise<chess_bot::feature>("interactions", 10);
+	set_handler = nh.advertise<std_msgs::String>("user_swh", 10);
 	set = nh.subscribe("ui_setup", 1, &MainUI::setUI, this);
 	menu_command = nh.subscribe("menu_data", 1, &MainUI::tabControl, this);
 	ui->TabHandle->removeTab(1);ui->TabHandle->removeTab(0);
@@ -124,6 +125,10 @@ void MainUI::setUI(const chess_bot::feature::ConstPtr& msg)
     	boardUI->start(QString("rosrun chess_ui_fen chess_ui_fen"));
     	interactUI=new InteractUI(nh,this);
     	interactUI->show();
+		QMessageBox::information( this, tr("Information"), tr("Plesae set the board according\nto the UI configuration and press OK") );
+		std_msgs::String msg;
+		msg.data="ok";		
+		set_handler.publish(msg);
 	}
 }
 

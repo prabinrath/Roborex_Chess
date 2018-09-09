@@ -41,6 +41,7 @@
 #include <QDebug>
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/String.h>
 #include "Menu.h"
 #include "InteractUI.h"
 #include "NewGame.h"
@@ -73,6 +74,7 @@ private:
     ros::NodeHandle nh; 
     chess_bot::feature fetmsg; //for interactions with chess_ai
     ros::Publisher feature_command; //to publish the quit event
+	ros::Publisher set_handler; //to reset the board handler matrix
     ros::Subscriber set,menu_command; //to connect Menu with main UI
     int menu_flg,newgame_flg,loadgame_flg,record_flg,inst_flg,credit_flg; //flags to prevent ambiguity of multiple UI instances 
 };

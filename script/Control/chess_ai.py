@@ -302,8 +302,9 @@ def diff(s):
 
 #arduino steps generation
 def arduino_steps(string,flag):
-        global dict1
+
         ret_string=""
+
         irow_8=8-int(string[1])
         icol_8=dict1[string[0]]
         frow_8=8-int(string[3])
@@ -409,7 +410,7 @@ def killing_move(frow_16,fcol_16):
                 b=0
         elif (check_kill==3):
                 a=0
-                b=18-fcol_16
+                b=17-fcol_16
         return a,b
 #end arduino steps generation
 
@@ -526,12 +527,12 @@ def main_():
 						temp.type=5
 						temp.sys="Game Over its a draw please \nrestart the game to play again"
 						uipub.publish(temp)
-						quit_game()
+						#quit_game()
 					if brd.is_checkmate():
 						temp.type=5
 						temp.sys="Game over congratulations you won please \nrestart the game to play again"
 						uipub.publish(temp)
-						quit_game()
+						#quit_game()
 					turn=True
 				else: #for illigal move
 					print('incorrect move')
@@ -564,17 +565,8 @@ def main_():
 					uipub.publish(temp)
 					outdata=outdata[0:4]
 				###
-				strsend=str()
 				mystr=arduino_steps(outdata,move_flag)
-				strsend="1_"+mystr[0:50];
-				ardpub.publish(strsend)
-				time.sleep(0.5)
-				if(len(mystr)>50):
-					strsend="2_"+mystr[50:len(mystr)]
-					ardpub.publish(strsend)
-					time.sleep(0.5)
-				strsend="ok"
-				ardpub.publish(strsend)
+				ardpub.publish(mystr)
 				###
 				if yes_respn==True:
 					while rwait==True:
