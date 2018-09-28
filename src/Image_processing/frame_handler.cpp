@@ -42,9 +42,9 @@
 using namespace cv;
 using namespace std;
 
-int iLowH = 22;int iHighH = 46;int iLowS = 38;int iHighS = 192;int iLowV = 131;int iHighV = 255; //for piece detection
-int hLowH = 0;int hHighH = 45;int hLowS = 135;int hHighS = 255;int hLowV = 131;int hHighV = 255; //for hand detection
-int x = 108;int y = 23;int width = 392;int height = 386;
+int iLowH = 22;int iHighH = 46;int iLowS = 37;int iHighS = 255;int iLowV = 139;int iHighV = 255; //for piece detection
+int hLowH = 0;int hHighH = 45;int hLowS = 170;int hHighS = 255;int hLowV = 131;int hHighV = 255; //for hand detection
+int x = 151;int y = 0;int width = 369;int height = 392;
 Mat thresh, frame, gray, blr, cannyed, hsv, hand; //image variables declaration
 char sen[74]; //to store the output binary string
 vector<Point2f> crdlib(34); //vector to store the latched coordinates of the white squares

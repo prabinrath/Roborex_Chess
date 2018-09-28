@@ -21,7 +21,7 @@ The project uses：
 
 * Arduino UNO to control an X-Y slider mapping the system output and the physical chess board
 
-* Serial communication protocol (sopported by rosserial library) for communicating between Arduino and the system
+* Serial communication protocol (sopported by Pyserial library) for communicating between Arduino and the system
 
 ## Prerequisites
 
@@ -34,4 +34,4 @@ The project uses：
 * CMake 2.8.3
 
 # Note
-The Project is still under Development.
+The Project is completed and is in its second phase of development.
