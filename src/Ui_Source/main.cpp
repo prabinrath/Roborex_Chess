@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "chess_ui");
     ros::NodeHandle nh;
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon((ros::package::getPath("chess_bot")+"/utils/chess.png").c_str()));
     MainUI w(nh);
     w.show();
     ros::Rate rate(30);

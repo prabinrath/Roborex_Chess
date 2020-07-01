@@ -7,7 +7,7 @@ unsigned long previous=0,current;
 const int stepsPerRevolution = 200;
 Stepper x_(stepsPerRevolution, 4, 5, 6, 7);
 Stepper y_(stepsPerRevolution, 11, 10, 9, 8);
-   
+
 void setup()
 { 
   y_.setSpeed(10);

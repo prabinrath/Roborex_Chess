@@ -141,3 +141,33 @@ Qxh3 Rxh3 9. Rg1 Qxg1+ 10. Kd2 Qxf2 11. Nc3 Rxh2 12. Nxd5 Qxd4+ *
 
 1. g4 d5 2. Nf3 Nc6 3. e4 Bxg4 4. Ng5 Bxd1 *
 
+[Event "ingenium1"]
+[Site "?"]
+[Date "2018:09:30"]
+[Round "1"]
+[White "Cleo"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. h4 Nf6 *
+
+[Event "jasndjd"]
+[Site "?"]
+[Date "2018:10:5"]
+[Round "5"]
+[White "Stockfish"]
+[Black "ajay"]
+[Result "*"]
+
+1. d4 *
+
+[Event "Quest"]
+[Site "?"]
+[Date "2018:10:5"]
+[Round "1"]
+[White "Ajay"]
+[Black "Stockfish"]
+[Result "*"]
+
+1. Nc3 d5 2. Nxd5 Qxd5 3. h4 Nf6 4. Rh3 Bxh3 *
+
