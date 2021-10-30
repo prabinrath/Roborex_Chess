@@ -34,4 +34,4 @@ The project uses：
 * CMake 2.8.3
 
 # Note
-The Project is completed and is in its second phase of development.
+The Project is completed and the code has been archived.
